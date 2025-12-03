@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { IDefaultContainerProps } from '../../typings/BoilerplateDefaultTypings';
 import { useParams } from 'react-router-dom';
 import UserProfileListController from '../../modules/userprofile/pages/UserProfileList/userProfileListController';
-import ExampleDetailController from '../example/pages/exampleDetail/exampleDetailContoller';
+import TaskDetailController from '../tasks/pages/taskDetail/taskDetailContoller';
 import AuthContext, { IAuthContext } from '/imports/app/authProvider/authContext';
 
 export interface IUserProfileModuleContext {
@@ -23,7 +23,7 @@ export default (props: IDefaultContainerProps) => {
 
 	const renderPage = () => {
 		if (!!!state || !validState.includes(state)) return <UserProfileListController />;
-		return <ExampleDetailController />;
+		return <TaskDetailController />;
 	};
 
 	const providerValue = {

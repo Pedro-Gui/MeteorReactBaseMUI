@@ -1,4 +1,4 @@
-import { Recurso as Exemplo } from '/imports/modules/example/config/recursos';
+import { Recurso as Welcome } from '../../modules/tasks/config/recursos';
 import { Recurso as Aniversario } from '/imports/modules/aniversario/config/recursos';
 import { Recurso as Usuarios } from '/imports/modules/userprofile/config/recurso';
 import { RoleType } from '/imports/security/config/roleType';
@@ -11,7 +11,7 @@ type MapRolesRecursos = Record<RoleType, Array<string>>;
 const _mapRolesRecursos: MapRolesRecursos = {
 	[RoleType.PUBLICO]: [],
 	[RoleType.USUARIO]: [
-		..._getAllValues(Exemplo),
+		..._getAllValues(Welcome),
 		..._getAllValues(HomeResources),
 		..._getAllValues(SysFormTestPageResources),
 		..._getAllValues(Aniversario),

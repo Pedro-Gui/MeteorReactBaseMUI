@@ -1,37 +1,37 @@
 import React, { createContext, useCallback, useContext } from 'react';
-import ExampleDetailView from './exampleDetailView';
+import TaskDetailView from './taskDetailView';
 import { useNavigate } from 'react-router-dom';
-import { ExampleModuleContext } from '../../exampleContainer';
+import { TaskModuleContext } from '../../taskContainer';
 import { useTracker } from 'meteor/react-meteor-data';
-import { exampleApi } from '../../api/exampleApi';
-import { IExample } from '../../api/exampleSch';
+import { taskApi } from '../../api/taskApi';
+import { ITask } from '../../api/taskSch';
 import { ISchema } from '../../../../typings/ISchema';
 import { IMeteorError } from '../../../../typings/BoilerplateDefaultTypings';
 import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
 
-interface IExampleDetailContollerContext {
+interface ITaskDetailContollerContext {
 	closePage: () => void;
-	document: IExample;
+	document: ITask;
 	loading: boolean;
-	schema: ISchema<IExample>;
-	onSubmit: (doc: IExample) => void;
+	schema: ISchema<ITask>;
+	onSubmit: (doc: ITask) => void;
 	changeToEdit: (id: string) => void;
 }
 
-export const ExampleDetailControllerContext = createContext<IExampleDetailContollerContext>(
-	{} as IExampleDetailContollerContext
+export const TaskDetailControllerContext = createContext<ITaskDetailContollerContext>(
+	{} as ITaskDetailContollerContext
 );
 
-const ExampleDetailController = () => {
+const TaskDetailController = () => {
 	const navigate = useNavigate();
-	const { id, state } = useContext(ExampleModuleContext);
+	const { id, state } = useContext(TaskModuleContext);
 	const { showNotification } = useContext<IAppLayoutContext>(AppLayoutContext);
 
 	const { document, loading } = useTracker(() => {
-		const subHandle = !!id ? exampleApi.subscribe('exampleDetail', { _id: id }) : null;
-		const document = id && subHandle?.ready() ? exampleApi.findOne({ _id: id }) : {};
+		const subHandle = !!id ? taskApi.subscribe('taskDetail', { _id: id }) : null;
+		const document = id && subHandle?.ready() ? taskApi.findOne({ _id: id }) : {};
 		return {
-			document: (document as IExample) ?? ({ _id: id } as IExample),
+			document: (document as ITask) ?? ({ _id: id } as ITask),
 			loading: !!subHandle && !subHandle?.ready()
 		};
 	}, [id]);
@@ -40,12 +40,12 @@ const ExampleDetailController = () => {
 		navigate(-1);
 	}, []);
 	const changeToEdit = useCallback((id: string) => {
-		navigate(`/example/edit/${id}`);
+		navigate(`/task/edit/${id}`);
 	}, []);
 
-	const onSubmit = useCallback((doc: IExample) => {
+	const onSubmit = useCallback((doc: ITask) => {
 		const selectedAction = state === 'create' ? 'insert' : 'update';
-		exampleApi[selectedAction](doc, (e: IMeteorError) => {
+		taskApi[selectedAction](doc, (e: IMeteorError) => {
 			if (!e) {
 				closePage();
 				showNotification({
@@ -64,18 +64,18 @@ const ExampleDetailController = () => {
 	}, []);
 
 	return (
-		<ExampleDetailControllerContext.Provider
+		<TaskDetailControllerContext.Provider
 			value={{
 				closePage,
 				document: { ...document, _id: id },
 				loading,
-				schema: exampleApi.getSchema(),
+				schema: taskApi.getSchema(),
 				onSubmit,
 				changeToEdit
 			}}>
-			{<ExampleDetailView />}
-		</ExampleDetailControllerContext.Provider>
+			{<TaskDetailView />}
+		</TaskDetailControllerContext.Provider>
 	);
 };
 
-export default ExampleDetailController;
+export default TaskDetailController;

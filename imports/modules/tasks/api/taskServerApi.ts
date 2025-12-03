@@ -1,14 +1,14 @@
 // region Imports
 import { Recurso } from '../config/recursos';
-import { exampleSch, IExample } from './exampleSch';
-import { userprofileServerApi } from '../../../modules/userprofile/api/userProfileServerApi';
+import { taskSch, ITask } from './taskSch';
+import { userprofileServerApi } from '../../userprofile/api/userProfileServerApi';
 import { ProductServerBase } from '../../../api/productServerBase';
 
 // endregion
 
-class ExampleServerApi extends ProductServerBase<IExample> {
+class TaskServerApi extends ProductServerBase<ITask> {
 	constructor() {
-		super('example', exampleSch, {
+		super('task', taskSch, {
 			resources: Recurso
 			// saveImageToDisk: true,
 		});
@@ -16,19 +16,19 @@ class ExampleServerApi extends ProductServerBase<IExample> {
 		const self = this;
 
 		this.addTransformedPublication(
-			'exampleList',
+			'taskList',
 			(filter = {}) => {
 				return this.defaultListCollectionPublication(filter, {
 					projection: { title: 1, type: 1, typeMulti: 1, createdat: 1 }
 				});
 			},
-			async (doc: IExample & { nomeUsuario: string }) => {
+			async (doc: ITask & { nomeUsuario: string }) => {
 				const userProfileDoc = await userprofileServerApi.getCollectionInstance().findOneAsync({ _id: doc.createdby });
 				return { ...doc };
 			}
 		);
 
-		this.addPublication('exampleDetail', (filter = {}) => {
+		this.addPublication('taskDetail', (filter = {}) => {
 			return this.defaultDetailCollectionPublication(filter, {
 				projection: {
 					contacts: 1,
@@ -81,4 +81,4 @@ class ExampleServerApi extends ProductServerBase<IExample> {
 	}
 }
 
-export const exampleServerApi = new ExampleServerApi();
+export const taskServerApi = new TaskServerApi();

@@ -2,22 +2,22 @@ import React, { useContext } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { ExampleListControllerContext } from './exampleListController';
+import { TaskListControllerContext } from './taskListController';
 import { useNavigate } from 'react-router-dom';
 import { ComplexTable } from '../../../../ui/components/ComplexTable/ComplexTable';
 import DeleteDialog from '../../../../ui/appComponents/showDialog/custom/deleteDialog/deleteDialog';
-import ExampleListStyles from './exampleListStyles';
+import TaskListStyles from './taskListStyles';
 import SysTextField from '../../../../ui/components/sysFormFields/sysTextField/sysTextField';
 import { SysSelectField } from '../../../../ui/components/sysFormFields/sysSelectField/sysSelectField';
 import SysIcon from '../../../../ui/components/sysIcon/sysIcon';
 import { SysFab } from '../../../../ui/components/sysFab/sysFab';
 import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
 
-const ExampleListView = () => {
-	const controller = React.useContext(ExampleListControllerContext);
+const TaskListView = () => {
+	const controller = React.useContext(TaskListControllerContext);
 	const sysLayoutContext = useContext<IAppLayoutContext>(AppLayoutContext);
 	const navigate = useNavigate();
-	const { Container, LoadingContainer, SearchContainer } = ExampleListStyles;
+	const { Container, LoadingContainer, SearchContainer } = TaskListStyles;
 
 	const options = [{ value: '', label: 'Nenhum' }, ...(controller.schema.type.options?.() ?? [])];
 
@@ -49,9 +49,9 @@ const ExampleListView = () => {
 					<ComplexTable
 						data={controller.todoList}
 						schema={controller.schema}
-						onRowClick={(row) => navigate('/example/view/' + row.id)}
+						onRowClick={(row) => navigate('/task/view/' + row.id)}
 						searchPlaceholder={'Pesquisar exemplo'}
-						onEdit={(row) => navigate('/example/edit/' + row._id)}
+						onEdit={(row) => navigate('/task/edit/' + row._id)}
 						onDelete={(row) => {
 							DeleteDialog({
 								showDialog: sysLayoutContext.showDialog,
@@ -81,4 +81,4 @@ const ExampleListView = () => {
 	);
 };
 
-export default ExampleListView;
+export default TaskListView;

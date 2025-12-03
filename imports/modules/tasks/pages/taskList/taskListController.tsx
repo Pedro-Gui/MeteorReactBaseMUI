@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import ExampleListView from './exampleListView';
+import TaskListView from './taskListView';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router-dom';
 import { useTracker } from 'meteor/react-meteor-data';
 import { ISchema } from '../../../../typings/ISchema';
-import { IExample } from '../../api/exampleSch';
-import { exampleApi } from '../../api/exampleApi';
+import { ITask } from '../../api/taskSch';
+import { taskApi } from '../../api/taskApi';
 
 interface IInitialConfig {
 	sortProperties: { field: string; sortAscending: boolean };
@@ -14,18 +14,18 @@ interface IInitialConfig {
 	viewComplexTable: boolean;
 }
 
-interface IExampleListContollerContext {
+interface ITaskListContollerContext {
 	onAddButtonClick: () => void;
 	onDeleteButtonClick: (row: any) => void;
-	todoList: IExample[];
+	todoList: ITask[];
 	schema: ISchema<any>;
 	loading: boolean;
 	onChangeTextField: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	onChangeCategory: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const ExampleListControllerContext = React.createContext<IExampleListContollerContext>(
-	{} as IExampleListContollerContext
+export const TaskListControllerContext = React.createContext<ITaskListContollerContext>(
+	{} as ITaskListContollerContext
 );
 
 const initialConfig = {
@@ -35,11 +35,11 @@ const initialConfig = {
 	viewComplexTable: false
 };
 
-const ExampleListController = () => {
+const TaskListController = () => {
 	const [config, setConfig] = React.useState<IInitialConfig>(initialConfig);
 
-	const { title, type, typeMulti } = exampleApi.getSchema();
-	const exampleSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
+	const { title, type, typeMulti } = taskApi.getSchema();
+	const taskSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
 	const navigate = useNavigate();
 
 	const { sortProperties, filter } = config;
@@ -47,26 +47,26 @@ const ExampleListController = () => {
 		[sortProperties.field]: sortProperties.sortAscending ? 1 : -1
 	};
 
-	const { loading, examples } = useTracker(() => {
-		const subHandle = exampleApi.subscribe('exampleList', filter, {
+	const { loading, tasks } = useTracker(() => {
+		const subHandle = taskApi.subscribe('taskList', filter, {
 			sort
 		});
 
-		const examples = subHandle?.ready() ? exampleApi.find(filter, { sort }).fetch() : [];
+		const tasks = subHandle?.ready() ? taskApi.find(filter, { sort }).fetch() : [];
 		return {
-			examples,
+			tasks,
 			loading: !!subHandle && !subHandle.ready(),
-			total: subHandle ? subHandle.total : examples.length
+			total: subHandle ? subHandle.total : tasks.length
 		};
 	}, [config]);
 
 	const onAddButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
-		navigate(`/example/create/${newDocumentId}`);
+		navigate(`/task/create/${newDocumentId}`);
 	}, []);
 
 	const onDeleteButtonClick = useCallback((row: any) => {
-		exampleApi.remove(row);
+		taskApi.remove(row);
 	}, []);
 
 	const onChangeTextField = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,24 +95,24 @@ const ExampleListController = () => {
 		setConfig((prev) => ({ ...prev, filter: { ...prev.filter, type: value } }));
 	}, []);
 
-	const providerValues: IExampleListContollerContext = useMemo(
+	const providerValues: ITaskListContollerContext = useMemo(
 		() => ({
 			onAddButtonClick,
 			onDeleteButtonClick,
-			todoList: examples,
-			schema: exampleSchReduzido,
+			todoList: tasks,
+			schema: taskSchReduzido,
 			loading,
 			onChangeTextField,
 			onChangeCategory: onSelectedCategory
 		}),
-		[examples, loading]
+		[tasks, loading]
 	);
 
 	return (
-		<ExampleListControllerContext.Provider value={providerValues}>
-			<ExampleListView />
-		</ExampleListControllerContext.Provider>
+		<TaskListControllerContext.Provider value={providerValues}>
+			<TaskListView />
+		</TaskListControllerContext.Provider>
 	);
 };
 
-export default ExampleListController;
+export default TaskListController;
