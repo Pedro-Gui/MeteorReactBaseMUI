@@ -489,7 +489,7 @@ export const ComplexTable = (props: IComplexTableProps) => {
 				initialState={{
 					pagination: { paginationModel: { pageSize: 15 } }
 				}}
-				pageSizeOptions={[15, 20, 25]}
+				pageSizeOptions={[5, 15, 20, 25]}
 			/>
 		</ComplexTableContainer>
 	);

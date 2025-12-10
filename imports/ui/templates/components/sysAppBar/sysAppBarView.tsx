@@ -7,6 +7,7 @@ import { SysNavLink } from '/imports/ui/components/sysNavLink/sysNavLink';
 import SysMenu from '/imports/ui/components/sysMenu/sysMenuProvider';
 import SysAvatar from '/imports/ui/components/sysAvatar/sysAvatar';
 import RenderWithPermission from '/imports/security/ui/components/renderWithPermission';
+import { exact } from 'prop-types';
 
 interface ISysAppBar{
   logo?: ReactNode;
@@ -23,7 +24,7 @@ const SysAppBarView: React.FC<ISysAppBar> = ({logo}) => {
           {controller.menuOptions.map(option => (
             <RenderWithPermission key={option?.name} resources={option?.resources}>
               <SysNavLink
-                active={sysRoutes.checkIsActiveRoute(option?.path)}
+                active={sysRoutes.checkIsActiveRoute(option?.path, option?.exact)}
                 sysOptions={option!}
               />
             </RenderWithPermission>

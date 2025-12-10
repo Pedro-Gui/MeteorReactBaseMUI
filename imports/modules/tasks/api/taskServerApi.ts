@@ -14,6 +14,21 @@ class TaskServerApi extends ProductServerBase<ITask> {
 		});
 
 		const self = this;
+		
+		this.addTransformedPublication(
+			'5FirstTaskList',
+			(filter = {}) => {
+				return this.defaultListCollectionPublication(filter, {
+					projection: { title: 1, type: 1, typeMulti: 1, createdat: 1 },
+					limit: 5,
+					sort: {createdat: -1}
+				});
+			},
+			async (doc: ITask & { nomeUsuario: string }) => {
+				const userProfileDoc = await userprofileServerApi.getCollectionInstance().findOneAsync({ _id: doc.createdby });
+				return { ...doc };
+			}
+		);
 
 		this.addTransformedPublication(
 			'taskList',

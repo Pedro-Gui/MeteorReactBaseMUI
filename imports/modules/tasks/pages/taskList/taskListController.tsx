@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useContext } from 'react';
 import TaskListView from './taskListView';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { ISchema } from '../../../../typings/ISchema';
 import { ITask } from '../../api/taskSch';
 import { taskApi } from '../../api/taskApi';
+import { TaskModuleContext } from '../../taskContainer';
 
 interface IInitialConfig {
 	sortProperties: { field: string; sortAscending: boolean };
@@ -15,6 +16,7 @@ interface IInitialConfig {
 }
 
 interface ITaskListContollerContext {
+	onTaskButtonClick: () => void;
 	onAddButtonClick: () => void;
 	onDeleteButtonClick: (row: any) => void;
 	todoList: ITask[];
@@ -22,6 +24,7 @@ interface ITaskListContollerContext {
 	loading: boolean;
 	onChangeTextField: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	onChangeCategory: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	state: boolean;
 }
 
 export const TaskListControllerContext = React.createContext<ITaskListContollerContext>(
@@ -37,7 +40,7 @@ const initialConfig = {
 
 const TaskListController = () => {
 	const [config, setConfig] = React.useState<IInitialConfig>(initialConfig);
-
+	const { state } = useContext(TaskModuleContext);
 	const { title, type, typeMulti } = taskApi.getSchema();
 	const taskSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
 	const navigate = useNavigate();
@@ -48,7 +51,9 @@ const TaskListController = () => {
 	};
 
 	const { loading, tasks } = useTracker(() => {
-		const subHandle = taskApi.subscribe('taskList', filter, {
+		const list = state == 'mytask' ? 'taskList' : '5FirstTaskList';
+		
+		const subHandle = taskApi.subscribe(list, filter, {
 			sort
 		});
 
@@ -58,11 +63,16 @@ const TaskListController = () => {
 			loading: !!subHandle && !subHandle.ready(),
 			total: subHandle ? subHandle.total : tasks.length
 		};
-	}, [config]);
+	}, [config, state]);
 
 	const onAddButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
 		navigate(`/task/create/${newDocumentId}`);
+	}, []);
+
+	const onTaskButtonClick = useCallback(() => {
+		const newDocumentId = nanoid();
+		navigate(`/task/mytask`);
 	}, []);
 
 	const onDeleteButtonClick = useCallback((row: any) => {
@@ -97,15 +107,17 @@ const TaskListController = () => {
 
 	const providerValues: ITaskListContollerContext = useMemo(
 		() => ({
+			onTaskButtonClick,
 			onAddButtonClick,
 			onDeleteButtonClick,
 			todoList: tasks,
 			schema: taskSchReduzido,
 			loading,
 			onChangeTextField,
-			onChangeCategory: onSelectedCategory
+			onChangeCategory: onSelectedCategory,
+			state
 		}),
-		[tasks, loading]
+		[tasks, loading, state]
 	);
 
 	return (

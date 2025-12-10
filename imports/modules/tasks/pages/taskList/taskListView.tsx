@@ -23,22 +23,8 @@ const TaskListView = () => {
 
 	return (
 		<Container>
-			<Typography variant="h5">Lista de Itens</Typography>
-			<SearchContainer>
-				<SysTextField
-					name="search"
-					placeholder="Pesquisar por nome"
-					onChange={controller.onChangeTextField}
-					startAdornment={<SysIcon name={'search'} />}
-				/>
-				<SysSelectField
-					name="Category"
-					label="Categoria"
-					options={options}
-					placeholder="Selecionar"
-					onChange={controller.onChangeCategory}
-				/>
-			</SearchContainer>
+			<Typography variant="h5">{controller.state ? "Minhas Tarefas":"Atividades recentes"}</Typography>
+			
 			{controller.loading ? (
 				<LoadingContainer>
 					<CircularProgress />
@@ -49,8 +35,8 @@ const TaskListView = () => {
 					<ComplexTable
 						data={controller.todoList}
 						schema={controller.schema}
+						
 						onRowClick={(row) => navigate('/task/view/' + row.id)}
-						searchPlaceholder={'Pesquisar exemplo'}
 						onEdit={(row) => navigate('/task/edit/' + row._id)}
 						onDelete={(row) => {
 							DeleteDialog({
@@ -72,10 +58,10 @@ const TaskListView = () => {
 
 			<SysFab
 				variant="extended"
-				text="Adicionar"
-				startIcon={<SysIcon name={'add'} />}
+				text={controller.state? "Adicionar tarefa" :"Minhas tarefas"}
+				startIcon={<SysIcon name={'attachFile'} />}
 				fixed={true}
-				onClick={controller.onAddButtonClick}
+				onClick={controller.state? controller.onAddButtonClick:controller.onTaskButtonClick}
 			/>
 		</Container>
 	);

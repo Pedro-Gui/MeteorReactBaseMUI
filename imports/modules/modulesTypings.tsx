@@ -7,6 +7,7 @@ interface IAppMenu {
 	isProtected?: boolean;
 	icon?: React.ReactNode;
 	resources?: Array<string>;
+	exact?: boolean;
 }
 
 interface IRoute {

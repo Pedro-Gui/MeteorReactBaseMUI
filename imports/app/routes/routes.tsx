@@ -6,10 +6,10 @@ import { useLocation } from 'react-router-dom';
 class SysRoutes {
 	private routes: Array<IRoute | null>;
 	private menuItens: Array<IAppMenu | null>;
-	public getRoutes = (): Array<IRoute>  => this.routes.filter((route) => route !== null) as Array<IRoute>;
+	public getRoutes = (): Array<IRoute> => this.routes.filter((route) => route !== null) as Array<IRoute>;
 	public getMenuItens = () => {
 		return this.menuItens.map((item) => {
-			if(!item?.path) return undefined;
+			if (!item?.path) return undefined;
 			const routeResources = this.routes.filter((route) => route?.path === item.path).map((route) => route?.resources);
 			return {
 				...item,
@@ -19,7 +19,7 @@ class SysRoutes {
 	};
 
 	constructor() {
-		this.routes = [...Modules.pagesRouterList, ...Pages.pagesRouterList ];
+		this.routes = [...Modules.pagesRouterList, ...Pages.pagesRouterList];
 		this.menuItens = [...Pages.pagesMenuItemList, ...Modules.pagesMenuItemList];
 	}
 
@@ -38,15 +38,21 @@ class SysRoutes {
 		return false;
 	};
 
-	public checkIsActiveRoute = (routePath?: string) => {
+	public checkIsActiveRoute = (routePath?: string, exact?: boolean) => {
 		const location = useLocation().pathname;
+
 		if (!routePath) return false;
 		if (routePath === '/') return location === '/';
 
 		const normalizedRoutePath = routePath.replace(/\/$/, '');
+		const normalizedLocation = location.replace(/\/$/, '');
 
+		if (exact) {
+			return normalizedLocation === normalizedRoutePath;
+		}
 		return location.startsWith(normalizedRoutePath);
 	};
+
 }
 
 const sysRoutes = new SysRoutes();

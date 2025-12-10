@@ -6,6 +6,13 @@ export const taskMenuItemList: (IAppMenu | null)[] = [
 	{
 		path: '/task',
 		name: 'Home',
-		icon: <SysIcon name={'dashboard'} />
+		icon: <SysIcon name={'menuOpen'} />,
+		exact: true
+		
+	},
+	{
+		path: '/task/mytask',
+		name: 'Mytask',
+		icon: <SysIcon name={'person'} />
 	}
 ];

@@ -17,6 +17,7 @@ export const taskRouterList: (IRoute | null)[] = [
 	},
 	{
 		path: '/task',
+		exact: true,
 		component: TaskContainer,
 		isProtected: true,
 		resources: [Recurso.TASK_VIEW]
