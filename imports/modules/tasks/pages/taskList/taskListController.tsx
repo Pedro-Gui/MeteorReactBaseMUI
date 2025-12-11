@@ -18,13 +18,16 @@ interface IInitialConfig {
 interface ITaskListContollerContext {
 	onTaskButtonClick: () => void;
 	onAddButtonClick: () => void;
-	onDeleteButtonClick: (row: any) => void;
-	todoList: ITask[];
+	onEditButtonClick: (id: string) => void;
+	onDeleteButtonClick: (id: string) => void;
+	onSearch: (username: string | undefined) => void;
+	onSetFilter: (field: string, value: string | null | undefined) => void;
+	list: ITask[];
 	schema: ISchema<any>;
 	loading: boolean;
 	onChangeTextField: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	onChangeCategory: (event: React.ChangeEvent<HTMLInputElement>) => void;
-	state: boolean;
+	state: string | undefined;
 }
 
 export const TaskListControllerContext = React.createContext<ITaskListContollerContext>(
@@ -67,7 +70,12 @@ const TaskListController = () => {
 
 	const onAddButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
-		navigate(`/task/create/${newDocumentId}`);
+		navigate(`/task/mytask/create/${newDocumentId}`);
+	}, []);
+
+	const onEditButtonClick = useCallback((id: string) => {
+		const newDocumentId = nanoid();
+		navigate(`/task/mytask/edit/${id}`);
 	}, []);
 
 	const onTaskButtonClick = useCallback(() => {
@@ -75,8 +83,8 @@ const TaskListController = () => {
 		navigate(`/task/mytask`);
 	}, []);
 
-	const onDeleteButtonClick = useCallback((row: any) => {
-		taskApi.remove(row);
+	const onDeleteButtonClick = useCallback((id: string) => {
+		taskApi.remove({ _id: id });
 	}, []);
 
 	const onChangeTextField = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,12 +113,39 @@ const TaskListController = () => {
 		setConfig((prev) => ({ ...prev, filter: { ...prev.filter, type: value } }));
 	}, []);
 
+	const onSearch = useCallback((username: string | undefined) => {
+			const searchUsername = username !== undefined ? username.trim() : '';
+			const delayedSearch = setTimeout(() => {
+				setConfig((prevConfig) => ({
+					...prevConfig,
+					searchBy: searchUsername !== '' ? searchUsername : null
+				}));
+			}, 1000);
+			return () => clearTimeout(delayedSearch);
+		}, []);
+	
+		const onSetFilter = useCallback(
+			(field: string, value: string | null | undefined) => {
+				setConfig((prevConfig) => ({
+					...prevConfig,
+					filter: {
+						...prevConfig.filter,
+						...(value ? { [field]: value } : { [field]: { $ne: null } })
+					}
+				}));
+			},
+			[tasks]
+		);
+
 	const providerValues: ITaskListContollerContext = useMemo(
 		() => ({
 			onTaskButtonClick,
 			onAddButtonClick,
+			onEditButtonClick,
 			onDeleteButtonClick,
-			todoList: tasks,
+			onSearch,
+			onSetFilter,
+			list: tasks,
 			schema: taskSchReduzido,
 			loading,
 			onChangeTextField,

@@ -49,7 +49,7 @@ const TaskDetailView = () => {
 				<Body>
 					<FormColumn>
 						<SysTextField name="title" placeholder="Ex.: Item XX" />
-						<SysSelectField name="type" placeholder="Selecionar" />
+						<SysSelectField name="type" placeholder="Selecionar" disabled={state !== 'edit'}/>
 						<SysRadioButton name="typeMulti" childrenAlignment="row" size="small" />
 						<SysTextField
 							name="description"
@@ -60,11 +60,6 @@ const TaskDetailView = () => {
 							max={200}
 						/>
 						<SysUploadFile name="files" />
-						<SysSlider name="slider" />
-						<SysLocationField name="address" />
-					</FormColumn>
-					<FormColumn>
-						<SysCheckBox name="check" childrenAlignment="row" />
 					</FormColumn>
 				</Body>
 				<Footer>

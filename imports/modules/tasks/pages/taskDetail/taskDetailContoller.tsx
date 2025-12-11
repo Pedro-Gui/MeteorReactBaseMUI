@@ -40,18 +40,26 @@ const TaskDetailController = () => {
 		navigate(-1);
 	}, []);
 	const changeToEdit = useCallback((id: string) => {
-		navigate(`/task/edit/${id}`);
+		navigate(`/task/mytask/edit/${id}`);
 	}, []);
 
 	const onSubmit = useCallback((doc: ITask) => {
 		const selectedAction = state === 'create' ? 'insert' : 'update';
+		
+		doc.owner = Meteor.user()?.username || 'unknown';
+		doc.ownerId = Meteor.userId()!;
+
+		console.log('User:', Meteor.user());
+		console.log('UserId:', Meteor.userId());
+		console.log('Document to insert/update:', doc);
+
 		taskApi[selectedAction](doc, (e: IMeteorError) => {
 			if (!e) {
 				closePage();
 				showNotification({
 					type: 'success',
 					title: 'Operação realizada!',
-					message: `O exemplo foi ${selectedAction === 'update' ? 'atualizado' : 'cadastrado'} com sucesso!`
+					message: `A tarefa foi ${selectedAction === 'update' ? 'atualizado' : 'cadastrado'} com sucesso!`
 				});
 			} else {
 				showNotification({

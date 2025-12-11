@@ -26,26 +26,15 @@ export const taskSch: ISchema<ITask> = {
 		optional: true
 	},
 
-	check: {
-		type: Array<String>,
-		label: 'Grupos associados',
-		defaultValue: {},
-		optional: true,
-		options: () => [
-			{ value: 'Grupo 1', label: 'Grupo 1' },
-			{ value: 'Grupo 2', label: 'Grupo 2' },
-			{ value: 'Grupo 3', label: 'Grupo 3' }
-		]
-	},
 	type: {
 		type: String,
 		label: 'Categoria',
-		defaultValue: '',
+		defaultValue: 'cadastrado',
 		optional: false,
 		options: () => [
-			{ value: 'Categoria A', label: 'Categoria A' },
-			{ value: 'Categoria B', label: 'Categoria B' },
-			{ value: 'Categoria C', label: 'Categoria C' }
+			{ value: 'concluido', label: 'Concluído' },
+			{ value: 'andamento', label: 'Em andamento' },
+			{ value: 'cadastrado', label: 'Cadastrado' }
 		]
 	},
 	typeMulti: {
@@ -71,34 +60,6 @@ export const taskSch: ISchema<ITask> = {
 		optional: true,
 		isUpload: true
 	},
-	chip: {
-		type: [String],
-		label: 'Chips',
-		defaultValue: '',
-		optional: true
-	},
-	contacts: {
-		type: Object,
-		label: 'Contatos',
-		defaultValue: '',
-		optional: true,
-		subSchema: {
-			phone: {
-				type: String,
-				label: 'Telefone',
-				defaultValue: '',
-				optional: true,
-				mask: '(##) ####-####'
-			},
-			cpf: {
-				type: String,
-				label: 'CPF',
-				defaultValue: '',
-				optional: true,
-				mask: '###.###.###-##'
-			}
-		}
-	},
 
 	tasks: {
 		type: [Object],
@@ -120,28 +81,7 @@ export const taskSch: ISchema<ITask> = {
 			}
 		}
 	},
-	audio: {
-		type: String,
-		label: 'Áudio',
-		defaultValue: '',
-		optional: true,
-		isAudio: true
-	},
-	address: {
-		type: Object,
-		label: 'Localização',
-		defaultValue: '',
-		isMapLocation: true,
-		optional: true
-	},
-	slider: {
-		type: Number,
-		label: 'Slider',
-		defaultValue: 0,
-		optional: true,
-		max: 100,
-		min: 0
-	},
+
 	statusRadio: {
 		type: String,
 		label: 'Prioridade',
@@ -149,16 +89,23 @@ export const taskSch: ISchema<ITask> = {
 		optional: true,
 		radiosList: ['Baixa', 'Média', 'Alta']
 	},
-	statusToggle: {
-		type: Boolean,
-		label: 'Exigir comprovação',
-		defaultValue: false,
-		optional: true
-	}
+
+	owner: {
+		type: String,
+		label: 'Owner',
+		optional: true, 
+	},
+	ownerId: {
+		type: String,
+		label: 'Owner ID',
+		optional: true, // Set to true if the field is not always required
+	},
 };
 
 export interface ITask extends IDoc {
 	image: string;
+	owner: string;
+	ownerId: string;
 	title: string;
 	description: string;
 	check: Array<string>;
@@ -166,12 +113,8 @@ export interface ITask extends IDoc {
 	typeMulti: string;
 	date: Date;
 	files: object[];
-	chip: string[];
-	contacts: object;
 	tasks: object[];
-	audio: string;
-	address: object;
-	slider: number;
 	statusRadio: string;
 	statusToggle: boolean;
+
 }

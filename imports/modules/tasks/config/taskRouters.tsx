@@ -4,7 +4,7 @@ import { IRoute } from '../../modulesTypings';
 
 export const taskRouterList: (IRoute | null)[] = [
 	{
-		path: '/task/:screenState/:taskId',
+		path: '/task/mytask/:screenState/:taskId',
 		component: TaskContainer,
 		isProtected: true,
 		resources: [Recurso.TASK_VIEW]

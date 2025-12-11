@@ -19,7 +19,7 @@ class TaskServerApi extends ProductServerBase<ITask> {
 			'5FirstTaskList',
 			(filter = {}) => {
 				return this.defaultListCollectionPublication(filter, {
-					projection: { title: 1, type: 1, typeMulti: 1, createdat: 1 },
+					projection: { title: 1, type: 1,description:1,owner:1,ownerId:1, typeMulti: 1, createdat: 1 },
 					limit: 5,
 					sort: {createdat: -1}
 				});
@@ -34,7 +34,7 @@ class TaskServerApi extends ProductServerBase<ITask> {
 			'taskList',
 			(filter = {}) => {
 				return this.defaultListCollectionPublication(filter, {
-					projection: { title: 1, type: 1, typeMulti: 1, createdat: 1 }
+					projection: { title: 1, type: 1,description:1,owner:1,ownerId:1, typeMulti: 1, createdat: 1 }
 				});
 			},
 			async (doc: ITask & { nomeUsuario: string }) => {
@@ -58,7 +58,9 @@ class TaskServerApi extends ProductServerBase<ITask> {
 					statusToggle: 1,
 					slider: 1,
 					check: 1,
-					address: 1
+					address: 1,
+					owner: 1,
+					ownerId: 1
 				}
 			});
 		});
