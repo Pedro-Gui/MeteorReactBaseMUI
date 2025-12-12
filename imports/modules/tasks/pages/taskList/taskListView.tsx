@@ -133,6 +133,7 @@ const TaskListView = () => {
 							key={task._id}
 							description={task.description}
 							owner={task.owner}
+							ownerId={task.ownerId}
 							type={task.type}
 							_id={task._id!}
 						/>

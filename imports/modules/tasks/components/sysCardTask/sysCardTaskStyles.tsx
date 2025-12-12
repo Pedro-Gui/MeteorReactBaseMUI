@@ -19,17 +19,17 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 		boxShadow: sysShadows.shadow2,
 		display: 'grid',
 		gap: '0.75rem 1.25rem',
-		gridTemplateColumns: ' 25px 2fr 2fr 140px 2rem',
+		gridTemplateColumns: ' 25px 2fr 2fr 140px 1fr',
 		gridTemplateAreas: '"icon description owner status actions"',
 		alignItems: 'center',
 		textAlign: 'left',
 		[theme.breakpoints.down('lg')]: {
-			gridTemplateColumns: ' 25px 2fr 1fr 2rem',
-			gridTemplateAreas: '"icon description owner" "status actions"'
+			gridTemplateColumns: ' 25px 2fr 1fr 1fr',
+			gridTemplateAreas: '"icon description owner" "status actions actions"'
 		},
 		[theme.breakpoints.down('sm')]: {
-			gridTemplateColumns: '25px 1fr 1fr 2rem',
-			gridTemplateAreas: '"icon description description" "owner owner owner" "status actions actions"'
+			gridTemplateColumns: '25px 1fr 1fr 1fr',
+			gridTemplateAreas: '"icon description description" "owner owner" "status actions actions"'
 		},
 		'& > p': {
 			wordBreak: 'break-all'

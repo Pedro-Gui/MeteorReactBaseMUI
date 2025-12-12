@@ -12,6 +12,7 @@ import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvi
 interface ITaskDetailContollerContext {
 	closePage: () => void;
 	document: ITask;
+	userId: string;
 	loading: boolean;
 	schema: ISchema<ITask>;
 	onSubmit: (doc: ITask) => void;
@@ -26,16 +27,18 @@ const TaskDetailController = () => {
 	const navigate = useNavigate();
 	const { id, state } = useContext(TaskModuleContext);
 	const { showNotification } = useContext<IAppLayoutContext>(AppLayoutContext);
-
-	const { document, loading } = useTracker(() => {
+	
+	const { document, userId, loading } = useTracker(() => {
 		const subHandle = !!id ? taskApi.subscribe('taskDetail', { _id: id }) : null;
 		const document = id && subHandle?.ready() ? taskApi.findOne({ _id: id }) : {};
+		const userId = Meteor.userId();
 		return {
 			document: (document as ITask) ?? ({ _id: id } as ITask),
+			userId: userId || '',
 			loading: !!subHandle && !subHandle?.ready()
 		};
 	}, [id]);
-
+	
 	const closePage = useCallback(() => {
 		navigate(-1);
 	}, []);
@@ -48,11 +51,7 @@ const TaskDetailController = () => {
 		
 		doc.owner = Meteor.user()?.username || 'unknown';
 		doc.ownerId = Meteor.userId()!;
-
-		console.log('User:', Meteor.user());
-		console.log('UserId:', Meteor.userId());
-		console.log('Document to insert/update:', doc);
-
+		console.log('onSubmit doc:', doc);
 		taskApi[selectedAction](doc, (e: IMeteorError) => {
 			if (!e) {
 				closePage();
@@ -76,6 +75,7 @@ const TaskDetailController = () => {
 			value={{
 				closePage,
 				document: { ...document, _id: id },
+				userId,
 				loading,
 				schema: taskApi.getSchema(),
 				onSubmit,

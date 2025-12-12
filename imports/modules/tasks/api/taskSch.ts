@@ -28,19 +28,19 @@ export const taskSch: ISchema<ITask> = {
 
 	type: {
 		type: String,
-		label: 'Categoria',
-		defaultValue: 'cadastrado',
+		label: 'Status',
+		defaultValue: 'naoConcluido',
 		optional: false,
 		options: () => [
 			{ value: 'concluido', label: 'Concluído' },
 			{ value: 'andamento', label: 'Em andamento' },
-			{ value: 'cadastrado', label: 'Cadastrado' }
+			{ value: 'naoConcluido', label: 'Não concluído' }
 		]
 	},
 	typeMulti: {
 		type: String,
 		label: 'Prioridade',
-		optional: false,
+		optional: true,
 		options: () => [
 			{ value: 'alta', label: 'Alta' },
 			{ value: 'media', label: 'Média' },
@@ -98,14 +98,24 @@ export const taskSch: ISchema<ITask> = {
 	ownerId: {
 		type: String,
 		label: 'Owner ID',
-		optional: true, // Set to true if the field is not always required
+		optional: true, 
 	},
+	isPrivate: {
+		type: Boolean,
+		label: 'Privacidade',
+		optional: true,
+		defaultValue: false,
+		valueLabelTrue: 'Privado',
+		valueLabelFalse: 'Público',
+	}
+	
 };
 
 export interface ITask extends IDoc {
 	image: string;
 	owner: string;
 	ownerId: string;
+	isPrivate: boolean;
 	title: string;
 	description: string;
 	check: Array<string>;
@@ -115,6 +125,5 @@ export interface ITask extends IDoc {
 	files: object[];
 	tasks: object[];
 	statusRadio: string;
-	statusToggle: boolean;
-
+	
 }

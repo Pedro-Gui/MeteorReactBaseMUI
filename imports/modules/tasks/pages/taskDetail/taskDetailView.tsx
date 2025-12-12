@@ -9,15 +9,14 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import { SysSelectField } from '../../../../ui/components/sysFormFields/sysSelectField/sysSelectField';
 import { SysRadioButton } from '../../../../ui/components/sysFormFields/sysRadioButton/sysRadioButton';
-import { SysCheckBox } from '../../../../ui/components/sysFormFields/sysCheckBoxField/sysCheckBoxField';
 import SysFormButton from '../../../../ui/components/sysFormFields/sysFormButton/sysFormButton';
 import { SysUploadFile } from '../../../../ui/components/sysFormFields/sysUploadFile/sysUploadFile';
-import SysSlider from '../../../../ui/components/sysFormFields/sysSlider/sysSliderField';
-import { SysLocationField } from '../../../../ui/components/sysFormFields/sysLocationField/sysLocationField';
 import SysIcon from '../../../../ui/components/sysIcon/sysIcon';
+import SysSwitch from '/imports/ui/components/sysFormFields/sysSwitch/sysSwitch';
 
 const TaskDetailView = () => {
 	const controller = useContext(TaskDetailControllerContext);
+	const { userId } = useContext(TaskDetailControllerContext);
 	const { state } = useContext(TaskModuleContext);
 	const isView = state === 'view';
 	const isEdit = state === 'edit';
@@ -49,7 +48,7 @@ const TaskDetailView = () => {
 				<Body>
 					<FormColumn>
 						<SysTextField name="title" placeholder="Ex.: Item XX" />
-						<SysSelectField name="type" placeholder="Selecionar" disabled={state !== 'edit'}/>
+						<SysSelectField name="type" placeholder="Selecionar" disabled={state !== 'edit'} />
 						<SysRadioButton name="typeMulti" childrenAlignment="row" size="small" />
 						<SysTextField
 							name="description"
@@ -59,6 +58,11 @@ const TaskDetailView = () => {
 							showNumberCharactersTyped
 							max={200}
 						/>
+						<SysSwitch name='isPrivate'
+							valueLabelTrue={controller.schema.isPrivate.valueLabelTrue} // porque está propriedade precisa ser passada assim ? mas o label vem direto do schema
+							valueLabelFalse={controller.schema.isPrivate.valueLabelFalse}
+						/>
+
 						<SysUploadFile name="files" />
 					</FormColumn>
 				</Body>
@@ -68,7 +72,7 @@ const TaskDetailView = () => {
 							Cancelar
 						</Button>
 					)}
-					<SysFormButton>Salvar</SysFormButton>
+					<SysFormButton disabled={(controller.document.ownerId !== userId) && state !== 'create'}>Salvar</SysFormButton>
 				</Footer>
 			</SysForm>
 		</Container>

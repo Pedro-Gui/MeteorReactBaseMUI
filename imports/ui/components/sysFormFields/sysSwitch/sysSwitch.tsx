@@ -16,6 +16,8 @@ interface ISysSwitchProps extends ISysFormComponent<SwitchProps> {
 	};
 	labelPosition?: 'top' | 'start' | 'bottom' | 'end';
 	valueLabel?: string;
+	valueLabelTrue?: string;
+	valueLabelFalse?: string;
 }
 
 const SysSwitch: React.FC<ISysSwitchProps> = ({
@@ -35,6 +37,8 @@ const SysSwitch: React.FC<ISysSwitchProps> = ({
 	tooltipPosition,
 	labelPosition = 'end',
 	valueLabel,
+	valueLabelTrue = 'Sim',
+	valueLabelFalse = 'Não',
 	sxMap,
 	...otherProps
 }) => {
@@ -87,7 +91,7 @@ const SysSwitch: React.FC<ISysSwitchProps> = ({
 			tooltipPosition={tooltipPosition}>
 			<FormControlLabel
 				value={labelPosition}
-				label={valueLabel ?? (valueState ? 'Sim' : 'Não')}
+				label={valueLabel ?? (valueState ? valueLabelTrue : valueLabelFalse)}
 				control={
 					<Switch
 						{...otherProps}

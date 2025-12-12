@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useContext } from 'react';
+import React, { createContext, useCallback, useMemo, useContext } from 'react';
 import TaskListView from './taskListView';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { ISchema } from '../../../../typings/ISchema';
 import { ITask } from '../../api/taskSch';
 import { taskApi } from '../../api/taskApi';
 import { TaskModuleContext } from '../../taskContainer';
+import { IMeteorError } from '../../../../typings/BoilerplateDefaultTypings';
+import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
 
 interface IInitialConfig {
 	sortProperties: { field: string; sortAscending: boolean };
@@ -20,6 +22,7 @@ interface ITaskListContollerContext {
 	onAddButtonClick: () => void;
 	onEditButtonClick: (id: string) => void;
 	onDeleteButtonClick: (id: string) => void;
+	onConcluirButtonClick: (doc: ITask) => void;
 	onSearch: (username: string | undefined) => void;
 	onSetFilter: (field: string, value: string | null | undefined) => void;
 	list: ITask[];
@@ -43,6 +46,7 @@ const initialConfig = {
 
 const TaskListController = () => {
 	const [config, setConfig] = React.useState<IInitialConfig>(initialConfig);
+	const { showNotification } = useContext<IAppLayoutContext>(AppLayoutContext);
 	const { state } = useContext(TaskModuleContext);
 	const { title, type, typeMulti } = taskApi.getSchema();
 	const taskSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
@@ -83,6 +87,40 @@ const TaskListController = () => {
 		navigate(`/task/mytask`);
 	}, []);
 
+	const onConcluirButtonClick  = useCallback((doc: ITask) => {
+			switch (doc.type) {
+					case 'concluido':
+						doc.type = 'naoConcluido';
+						break;
+					case 'andamento':
+						doc.type = 'concluido';
+						break;
+					case 'naoConcluido':
+						doc.type = 'andamento';
+						break;
+					default:
+						doc.type = 'naoConcluido';
+						break;
+				}
+
+			taskApi['update'](doc, (e: IMeteorError) => {
+				
+				if (!e) {
+					
+					showNotification({
+						type: 'success',
+						title: 'Operação realizada!',
+						message: `A tarefa foi atualizada com sucesso!`
+					});
+				} else {
+					showNotification({
+						type: 'error',
+						title: 'Operação não realizada!',
+						message: `Erro ao realizar a operação: ${e.reason}`
+					});
+				}
+			});
+		}, []);
 	const onDeleteButtonClick = useCallback((id: string) => {
 		taskApi.remove({ _id: id });
 	}, []);
@@ -142,6 +180,7 @@ const TaskListController = () => {
 			onTaskButtonClick,
 			onAddButtonClick,
 			onEditButtonClick,
+			onConcluirButtonClick,
 			onDeleteButtonClick,
 			onSearch,
 			onSetFilter,
