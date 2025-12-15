@@ -17,63 +17,6 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useTheme } from '@mui/material/styles';
 
-/* const TaskListView = () => {
-	const controller = React.useContext(TaskListControllerContext);
-	const sysLayoutContext = useContext<IAppLayoutContext>(AppLayoutContext);
-	const navigate = useNavigate();
-	const { Container, LoadingContainer, SearchContainer } = TaskListStyles;
-
-	const options = [{ value: '', label: 'Nenhum' }, ...(controller.schema.type.options?.() ?? [])];
-
-	return (
-		<Container>
-			<Typography variant="h5">{controller.state ? "Minhas Tarefas":"Atividades recentes"}</Typography>
-			
-			{controller.loading ? (
-				<LoadingContainer>
-					<CircularProgress />
-					<Typography variant="body1">Aguarde, carregando informações...</Typography>
-				</LoadingContainer>
-			) : (
-				<Box sx={{ width: '100%' }}>
-					<ComplexTable
-						data={controller.todoList}
-						schema={controller.schema}
-						
-						onRowClick={(row) => navigate('/task/mytask/view/' + row.id)}
-						onEdit={(row) => navigate('/task/mytask/edit/' + row._id)}
-						onDelete={(row) => {
-							DeleteDialog({
-								showDialog: sysLayoutContext.showDialog,
-								closeDialog: sysLayoutContext.closeDialog,
-								title: `Excluir dado ${row.title}`,
-								message: `Tem certeza que deseja excluir o arquivo ${row.title}?`,
-								onDeleteConfirm: () => {
-									controller.onDeleteButtonClick(row);
-									sysLayoutContext.showNotification({
-										message: 'Excluído com sucesso!'
-									});
-								}
-							});
-						}}
-					/>
-				</Box>
-			)}
-
-			<SysFab
-				variant="extended"
-				text={controller.state? "Adicionar tarefa" :"Minhas tarefas"}
-				startIcon={<SysIcon name={'attachFile'} />}
-				fixed={true}
-				onClick={controller.state? controller.onAddButtonClick:controller.onTaskButtonClick}
-			/>
-		</Container>
-	);
-};
- */
-
-
-
 const TaskListView = () => {
 
 	const { list, onSearch, onSetFilter, onAddButtonClick,onTaskButtonClick, state } = useContext(TaskListControllerContext);
@@ -81,20 +24,13 @@ const TaskListView = () => {
 	const theme = useTheme();
 	const { Container, Filters } = TaskListStyles;
 	const options = [
-		{
-			value: '',
-			label: 'Nenhum'
-		},
-		{
-			value: 'MinhasTarefas',
-			label: 'Minhas Tarefas'
-		},
-		{
-			value: 'TodasTarefas',
-			label: 'Todas Tarefas'
-		}
+		{ value: '',			 label: 'Nenhum'},
+		{ value: 'concluido', 	 label: 'Concluído' },
+		{ value: 'andamento', 	 label: 'Em andamento' },
+		{ value: 'naoConcluido', label: 'Não concluído' }
 	];
 
+	
 	return (
 		<Container>
 			<Typography variant="h5">{state ? "Minhas Tarefas":"Atividades recentes"}</Typography>
@@ -102,7 +38,7 @@ const TaskListView = () => {
 				<TextField
 					name="TaskSearch"
 					placeholder="Pesquisar por descrição"
-					onChange={(e) => onSearch(e.target.value)}
+					onChange={(e) => onSearch('description', e.target.value)}
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position="start">
@@ -112,13 +48,13 @@ const TaskListView = () => {
 					}}
 				/>
 				<SysSelectField
-					name="owner"
-					label="Filtrar por proprietário"
+					name="Status"
+					label="Filtrar por status"
 					placeholder="Selecionar"
 					value={selectedRole}
 					onChange={(e) => {
 						setSelectedRole(e.target.value);
-						onSetFilter('owner', e.target.value);
+						onSetFilter('type', e.target.value);
 					}}
 					options={options}
 				/>

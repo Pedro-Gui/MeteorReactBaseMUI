@@ -23,7 +23,7 @@ interface ITaskListContollerContext {
 	onEditButtonClick: (id: string) => void;
 	onDeleteButtonClick: (id: string) => void;
 	onConcluirButtonClick: (doc: ITask) => void;
-	onSearch: (username: string | undefined) => void;
+	onSearch: (field: string, description: string | undefined) => void;
 	onSetFilter: (field: string, value: string | null | undefined) => void;
 	list: ITask[];
 	schema: ISchema<any>;
@@ -70,7 +70,7 @@ const TaskListController = () => {
 			loading: !!subHandle && !subHandle.ready(),
 			total: subHandle ? subHandle.total : tasks.length
 		};
-	}, [config, state]);
+	}, [config, state, filter]);
 
 	const onAddButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
@@ -151,18 +151,23 @@ const TaskListController = () => {
 		setConfig((prev) => ({ ...prev, filter: { ...prev.filter, type: value } }));
 	}, []);
 
-	const onSearch = useCallback((username: string | undefined) => {
-			const searchUsername = username !== undefined ? username.trim() : '';
+	const onSearch = useCallback((field: string, description: string | undefined) => {
+			const searchDescription = description !== undefined ? description.trim() : '';
 			const delayedSearch = setTimeout(() => {
 				setConfig((prevConfig) => ({
 					...prevConfig,
-					searchBy: searchUsername !== '' ? searchUsername : null
+					//{ $regexMatch: { input: <expression> , regex: <expression>, options: <expression> } }
+					//...(searchDescription ? { [field]: searchDescription } : { [field]: { $ne: null } })
+					filter: {
+						...prevConfig.filter,
+						...(searchDescription ? { [field]: { $regex: searchDescription, $options: 'i' } } : { [field]: { $ne: null } })
+					}
 				}));
 			}, 1000);
 			return () => clearTimeout(delayedSearch);
 		}, []);
 	
-		const onSetFilter = useCallback(
+	const onSetFilter = useCallback(
 			(field: string, value: string | null | undefined) => {
 				setConfig((prevConfig) => ({
 					...prevConfig,
