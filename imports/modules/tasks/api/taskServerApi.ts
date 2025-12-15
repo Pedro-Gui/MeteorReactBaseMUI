@@ -13,23 +13,25 @@ class TaskServerApi extends ProductServerBase<ITask> {
 			resources: Recurso
 			// saveImageToDisk: true,
 		});
-		
-		
+
+
 		const self = this;
-		
+
 		this.addTransformedPublication(
 			'5FirstTaskList',
-			
+
 			(filter = {}) => {
 				const userId = Meteor.userId(); // this.userId não existe neste escopo ?
-				
+
 				filter = {
 					$and: [
 						filter,
-						{$or: [
-							{ ownerId: userId },
-							{ isPrivate: false }
-						]}
+						{
+							$or: [
+								{ ownerId: userId },
+								{ isPrivate: false }
+							]
+						}
 					]
 				}
 
@@ -47,22 +49,36 @@ class TaskServerApi extends ProductServerBase<ITask> {
 
 		this.addTransformedPublication(
 			'taskList',
-			(filter = {}) => {
-				const userId = Meteor.userId();
-				
+			(filter = {}, options: any = {}) => {
+				const userId = Meteor.userId(); 
+				var { limit, skip, ...sort } = options.sort || {};
+				// tem jeito mais simples de limitar um numero em um raio ?
+				limit = limit > 25 ?  25:  limit;
+				limit = limit < 0 ?   0:  limit; 
+
 				filter = {
 					$and: [
 						filter,
-						{$or: [
-							{ ownerId: userId },
-							{ isPrivate: false }
-						]}
+						{
+							$or: [
+								{ ownerId: userId },
+								{ isPrivate: false }
+							]
+						}
 					]
 				}
 
-				return this.defaultListCollectionPublication(filter, {
-					projection: { title: 1, type: 1, description: 1, owner: 1, ownerId: 1, isPrivate: 1, typeMulti: 1, createdat: 1 }
-				});
+				const FullOptions = {
+					projection: {
+						title: 1, type: 1, description: 1, owner: 1,
+						ownerId: 1, isPrivate: 1, typeMulti: 1, createdat: 1
+					},       
+					sort: sort,         
+           			limit: limit,      
+            		skip: skip || 0       
+				};
+
+				return this.defaultListCollectionPublication(filter, FullOptions);
 			},
 			async (doc: ITask & { nomeUsuario: string }) => {
 				const userProfileDoc = await userprofileServerApi.getCollectionInstance().findOneAsync({ _id: doc.createdby });
@@ -70,8 +86,9 @@ class TaskServerApi extends ProductServerBase<ITask> {
 			}
 		);
 
+		
 		this.addPublication('taskDetail', (filter = {}) => {
-			
+
 			return this.defaultDetailCollectionPublication(filter, {
 				projection: {
 					contacts: 1,
@@ -94,36 +111,6 @@ class TaskServerApi extends ProductServerBase<ITask> {
 			});
 		});
 
-		// 	this.addRestEndpoint(
-		// 		'view',
-		// 		(params, options) => {
-		// 			console.log('Params', params);
-		// 			console.log('options.headers', options.headers);
-		// 			return { status: 'ok' };
-		// 		},
-		// 		['post']
-		// 	);
-
-		// 	this.addRestEndpoint(
-		// 		'view/:exampleId',
-		// 		(params, _options) => {
-		// 			console.log('Rest', params);
-		// 			if (params.exampleId) {
-		// 				return self
-		// 					.defaultCollectionPublication(
-		// 						{
-		// 							_id: params.exampleId
-		// 						},
-		// 						{}
-		// 					)
-		// 					.fetch();
-		// 			} else {
-		// 				return { ...params };
-		// 			}
-		// 		},
-		// 		['get']
-		// 	);
-		// }
 	}
 }
 

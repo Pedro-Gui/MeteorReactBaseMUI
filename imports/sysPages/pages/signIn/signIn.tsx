@@ -20,7 +20,7 @@ const SignInPage: React.FC = () => {
 
 	const handleSubmit = ({ email, password }: { email: string; password: string }) => {
 		signIn(email, password, (err) => {
-			if (!err) navigate('/task');
+			if (!err) navigate('/');
 			showNotification({
 				type: 'error',
 				title: 'Erro ao tentar logar',
@@ -32,7 +32,7 @@ const SignInPage: React.FC = () => {
 	const handleForgotPassword = () => navigate('/password-recovery');
 
 	useEffect(() => {
-		if (user) navigate('/task');
+		if (user) navigate('/');
 	}, [user]);
 
 	return (
@@ -42,7 +42,7 @@ const SignInPage: React.FC = () => {
 					<Typography variant="inherit" color={(theme) => theme.palette.sysText?.tertiary}>
 						{'{'}
 					</Typography>
-					Boilerplate <br /> Todo List
+					Boilerplate <br /> To-Do List
 					<Typography variant="inherit" color="sysText.tertiary">
 						<br />{'}'}
 					</Typography>

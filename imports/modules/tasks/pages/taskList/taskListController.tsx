@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useMemo, useContext } from 'react';
+import React, { createContext, useCallback, useMemo, useContext, useState } from 'react';
 import TaskListView from './taskListView';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router-dom';
@@ -11,10 +11,10 @@ import { IMeteorError } from '../../../../typings/BoilerplateDefaultTypings';
 import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
 
 interface IInitialConfig {
-	sortProperties: { field: string; sortAscending: boolean };
+	sortProperties: { field: string; sortAscending: boolean; skip: number; limit: number };
 	filter: Object;
 	searchBy: string | null;
-	viewComplexTable: boolean;
+	pageInitial: number;
 }
 
 interface ITaskListContollerContext {
@@ -25,6 +25,8 @@ interface ITaskListContollerContext {
 	onConcluirButtonClick: (doc: ITask) => void;
 	onSearch: (field: string, description: string | undefined) => void;
 	onSetFilter: (field: string, value: string | null | undefined) => void;
+	page: number;
+	setPage: React.Dispatch<React.SetStateAction<number>>;
 	list: ITask[];
 	schema: ISchema<any>;
 	loading: boolean;
@@ -38,10 +40,10 @@ export const TaskListControllerContext = React.createContext<ITaskListContollerC
 );
 
 const initialConfig = {
-	sortProperties: { field: 'createdat', sortAscending: true },
+	sortProperties: { field: 'createdat', sortAscending: false, skip: 0, limit: 5 },
 	filter: {},
 	searchBy: null,
-	viewComplexTable: false
+	pageInitial: 1,
 };
 
 const TaskListController = () => {
@@ -52,14 +54,20 @@ const TaskListController = () => {
 	const taskSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
 	const navigate = useNavigate();
 
-	const { sortProperties, filter } = config;
-	const sort = {
-		[sortProperties.field]: sortProperties.sortAscending ? 1 : -1
+	const { sortProperties, filter, pageInitial } = config;
+
+	const [page, setPage] = useState<number>(pageInitial);
+
+	var sort = {
+		[sortProperties.field]: sortProperties.sortAscending ? 1 : -1,
+		limit: sortProperties.limit,
+		skip: sortProperties.skip
 	};
 
 	const { loading, tasks } = useTracker(() => {
 		const list = state == 'mytask' ? 'taskList' : '5FirstTaskList';
-		
+		sort.skip = sort.limit * (page - 1);
+
 		const subHandle = taskApi.subscribe(list, filter, {
 			sort
 		});
@@ -70,7 +78,7 @@ const TaskListController = () => {
 			loading: !!subHandle && !subHandle.ready(),
 			total: subHandle ? subHandle.total : tasks.length
 		};
-	}, [config, state, filter]);
+	}, [config, state, filter, page]);
 
 	const onAddButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
@@ -87,40 +95,40 @@ const TaskListController = () => {
 		navigate(`/task/mytask`);
 	}, []);
 
-	const onConcluirButtonClick  = useCallback((doc: ITask) => {
-			switch (doc.type) {
-					case 'concluido':
-						doc.type = 'naoConcluido';
-						break;
-					case 'andamento':
-						doc.type = 'concluido';
-						break;
-					case 'naoConcluido':
-						doc.type = 'andamento';
-						break;
-					default:
-						doc.type = 'naoConcluido';
-						break;
-				}
+	const onConcluirButtonClick = useCallback((doc: ITask) => {
+		switch (doc.type) {
+			case 'concluido':
+				doc.type = 'naoConcluido';
+				break;
+			case 'andamento':
+				doc.type = 'concluido';
+				break;
+			case 'naoConcluido':
+				doc.type = 'andamento';
+				break;
+			default:
+				doc.type = 'naoConcluido';
+				break;
+		}
 
-			taskApi['update'](doc, (e: IMeteorError) => {
-				
-				if (!e) {
-					
-					showNotification({
-						type: 'success',
-						title: 'Operação realizada!',
-						message: `A tarefa foi atualizada com sucesso!`
-					});
-				} else {
-					showNotification({
-						type: 'error',
-						title: 'Operação não realizada!',
-						message: `Erro ao realizar a operação: ${e.reason}`
-					});
-				}
-			});
-		}, []);
+		taskApi['update'](doc, (e: IMeteorError) => {
+
+			if (!e) {
+
+				showNotification({
+					type: 'success',
+					title: 'Operação realizada!',
+					message: `A tarefa foi atualizada com sucesso!`
+				});
+			} else {
+				showNotification({
+					type: 'error',
+					title: 'Operação não realizada!',
+					message: `Erro ao realizar a operação: ${e.reason}`
+				});
+			}
+		});
+	}, []);
 	const onDeleteButtonClick = useCallback((id: string) => {
 		taskApi.remove({ _id: id });
 	}, []);
@@ -152,33 +160,32 @@ const TaskListController = () => {
 	}, []);
 
 	const onSearch = useCallback((field: string, description: string | undefined) => {
-			const searchDescription = description !== undefined ? description.trim() : '';
-			const delayedSearch = setTimeout(() => {
-				setConfig((prevConfig) => ({
-					...prevConfig,
-					//{ $regexMatch: { input: <expression> , regex: <expression>, options: <expression> } }
-					//...(searchDescription ? { [field]: searchDescription } : { [field]: { $ne: null } })
-					filter: {
-						...prevConfig.filter,
-						...(searchDescription ? { [field]: { $regex: searchDescription, $options: 'i' } } : { [field]: { $ne: null } })
-					}
-				}));
-			}, 1000);
-			return () => clearTimeout(delayedSearch);
-		}, []);
-	
+		const searchDescription = description !== undefined ? description.trim() : '';
+		const delayedSearch = setTimeout(() => {
+			setConfig((prevConfig) => ({
+				...prevConfig,
+				//{ $regexMatch: { input: <expression> , regex: <expression>, options: <expression> } }
+				filter: {
+					...prevConfig.filter,
+					...(searchDescription ? { [field]: { $regex: searchDescription, $options: 'i' } } : { [field]: { $ne: null } })
+				}
+			}));
+		}, 1000);
+		return () => clearTimeout(delayedSearch);
+	}, []);
+
 	const onSetFilter = useCallback(
-			(field: string, value: string | null | undefined) => {
-				setConfig((prevConfig) => ({
-					...prevConfig,
-					filter: {
-						...prevConfig.filter,
-						...(value ? { [field]: value } : { [field]: { $ne: null } })
-					}
-				}));
-			},
-			[tasks]
-		);
+		(field: string, value: string | null | undefined) => {
+			setConfig((prevConfig) => ({
+				...prevConfig,
+				filter: {
+					...prevConfig.filter,
+					...(value ? { [field]: value } : { [field]: { $ne: null } })
+				}
+			}));
+		},
+		[tasks]
+	);
 
 	const providerValues: ITaskListContollerContext = useMemo(
 		() => ({
@@ -189,6 +196,8 @@ const TaskListController = () => {
 			onDeleteButtonClick,
 			onSearch,
 			onSetFilter,
+			setPage,
+			page,
 			list: tasks,
 			schema: taskSchReduzido,
 			loading,
