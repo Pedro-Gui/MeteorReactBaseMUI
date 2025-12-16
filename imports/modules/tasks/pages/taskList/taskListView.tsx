@@ -1,28 +1,20 @@
 import React, { useContext, useState } from 'react';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import { TaskListControllerContext } from './taskListController';
 import { SysCardTask } from '../../components/sysCardTask/sysCardTask';
-import { useNavigate } from 'react-router-dom';
-import { ComplexTable } from '../../../../ui/components/ComplexTable/ComplexTable';
-import DeleteDialog from '../../../../ui/appComponents/showDialog/custom/deleteDialog/deleteDialog';
 import TaskListStyles from './taskListStyles';
-import SysTextField from '../../../../ui/components/sysFormFields/sysTextField/sysTextField';
 import { SysSelectField } from '../../../../ui/components/sysFormFields/sysSelectField/sysSelectField';
 import SysIcon from '../../../../ui/components/sysIcon/sysIcon';
 import { SysFab } from '../../../../ui/components/sysFab/sysFab';
-import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-import { set } from 'lodash';
 import Pagination from '@mui/material/Pagination';
 
 const TaskListView = () => {
 
-	const { list, onSearch, onSetFilter, onAddButtonClick, onTaskButtonClick, state, page, setPage } = useContext(TaskListControllerContext);
+	const { list, onSearch, onSetFilter, onAddButtonClick, onTaskButtonClick, state, page, setPage, loading } = useContext(TaskListControllerContext);
 	const [selectedRole, setSelectedRole] = useState('');
 	const [searchTxt, setSearchTxt] = useState('');
 	const theme = useTheme();
@@ -33,12 +25,12 @@ const TaskListView = () => {
 		{ value: 'andamento', label: 'Em andamento' },
 		{ value: 'naoConcluido', label: 'Não concluído' }
 	];
-
+	
 
 	return (
 		<Container>
 			<Typography variant="h5">{state ? "Minhas Tarefas" : "Atividades recentes"}</Typography>
-			{state && (<Filters>
+			{state &&  (<Filters>
 				<TextField
 					name="TaskSearch"
 					placeholder="Pesquisar por descrição"
@@ -53,8 +45,8 @@ const TaskListView = () => {
 						),
 						endAdornment: searchTxt && (
 							<InputAdornment position="end">
-								<IconButton onClick={() => {setSearchTxt(''); onSearch('description', '')}} edge="end">
-									<SysIcon name={'close'} /> 
+								<IconButton onClick={() => { setSearchTxt(''); onSearch('description', '') }} edge="end">
+									<SysIcon name={'close'} />
 								</IconButton>
 							</InputAdornment>
 						)
@@ -72,9 +64,8 @@ const TaskListView = () => {
 					options={options}
 				/>
 			</Filters>)}
-			{list &&
+			{list && !loading &&
 				list?.map((task) => {
-					//console.log('passando props:', task);
 					return (
 						<SysCardTask
 							title={task.title}
@@ -87,8 +78,8 @@ const TaskListView = () => {
 						/>
 					);
 				})}
-			{/*no lugar de 10 deveria ser tamanho da lista dividido pelo numero de elementos por pagina, mas não consegui publicar o tamanho da lista ainda*/ }
-			{state && (<Pagination count={10} page={page} onChange={(e, value) => setPage(value)} color="primary" />)}
+			{/*no lugar de 10 deveria ser tamanho da lista dividido pelo numero de elementos por pagina, mas não consegui publicar o tamanho da lista ainda*/}
+			{state && !loading &&(<Pagination count={10} page={page} onChange={(e, value) => setPage(value)} color="primary" />)}
 			<SysFab
 				variant="extended"
 				text={state ? "Adicionar tarefa" : "Minhas tarefas"}

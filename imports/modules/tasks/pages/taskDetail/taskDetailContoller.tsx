@@ -43,7 +43,7 @@ const TaskDetailController = () => {
 		navigate(-1);
 	}, []);
 	const changeToEdit = useCallback((id: string) => {
-		navigate(`/task/mytask/edit/${id}`);
+		navigate(`/mytask/edit/${id}`);
 	}, []);
 
 	const onSubmit = useCallback((doc: ITask) => {
@@ -51,7 +51,6 @@ const TaskDetailController = () => {
 		
 		doc.owner = Meteor.user()?.username || 'unknown';
 		doc.ownerId = Meteor.userId()!;
-		console.log('onSubmit doc:', doc);
 		taskApi[selectedAction](doc, (e: IMeteorError) => {
 			if (!e) {
 				closePage();

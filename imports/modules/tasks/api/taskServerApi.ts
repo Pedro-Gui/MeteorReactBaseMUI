@@ -17,7 +17,7 @@ class TaskServerApi extends ProductServerBase<ITask> {
 
 		const self = this;
 
-		this.addTransformedPublication(
+		this.addPublication(
 			'5FirstTaskList',
 
 			(filter = {}) => {
@@ -40,14 +40,11 @@ class TaskServerApi extends ProductServerBase<ITask> {
 					limit: 5,
 					sort: { createdat: -1 }
 				});
-			},
-			async (doc: ITask & { nomeUsuario: string }) => {
-				const userProfileDoc = await userprofileServerApi.getCollectionInstance().findOneAsync({ _id: doc.createdby });
-				return { ...doc };
 			}
+			
 		);
 
-		this.addTransformedPublication(
+		this.addPublication(
 			'taskList',
 			(filter = {}, options: any = {}) => {
 				const userId = Meteor.userId(); 
@@ -79,11 +76,8 @@ class TaskServerApi extends ProductServerBase<ITask> {
 				};
 
 				return this.defaultListCollectionPublication(filter, FullOptions);
-			},
-			async (doc: ITask & { nomeUsuario: string }) => {
-				const userProfileDoc = await userprofileServerApi.getCollectionInstance().findOneAsync({ _id: doc.createdby });
-				return { ...doc };
 			}
+			
 		);
 
 		

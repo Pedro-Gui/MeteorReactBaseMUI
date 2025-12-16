@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useMemo, useContext, useState } from 'react';
+import React, { useCallback, useMemo, useContext, useState} from 'react';
 import TaskListView from './taskListView';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { taskApi } from '../../api/taskApi';
 import { TaskModuleContext } from '../../taskContainer';
 import { IMeteorError } from '../../../../typings/BoilerplateDefaultTypings';
 import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
+
 
 interface IInitialConfig {
 	sortProperties: { field: string; sortAscending: boolean; skip: number; limit: number };
@@ -53,7 +54,7 @@ const TaskListController = () => {
 	const { title, type, typeMulti } = taskApi.getSchema();
 	const taskSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
 	const navigate = useNavigate();
-
+	
 	const { sortProperties, filter, pageInitial } = config;
 
 	const [page, setPage] = useState<number>(pageInitial);
@@ -82,20 +83,21 @@ const TaskListController = () => {
 
 	const onAddButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
-		navigate(`/task/mytask/create/${newDocumentId}`);
+		navigate(`/mytask/create/${newDocumentId}`);
 	}, []);
 
 	const onEditButtonClick = useCallback((id: string) => {
 		const newDocumentId = nanoid();
-		navigate(`/task/mytask/edit/${id}`);
+		navigate(`/mytask/edit/${id}`);
 	}, []);
 
 	const onTaskButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
-		navigate(`/task/mytask`);
+		navigate(`/mytask`);
 	}, []);
 
 	const onConcluirButtonClick = useCallback((doc: ITask) => {
+
 		switch (doc.type) {
 			case 'concluido':
 				doc.type = 'naoConcluido';
@@ -129,6 +131,7 @@ const TaskListController = () => {
 			}
 		});
 	}, []);
+	
 	const onDeleteButtonClick = useCallback((id: string) => {
 		taskApi.remove({ _id: id });
 	}, []);

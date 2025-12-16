@@ -1,13 +1,17 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import { ElementType } from 'react';
+import { Box, BoxProps, IconButton, IconButtonProps, styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material/styles';
 import { sysShadows, sysSizing } from '../../../../ui/materialui/styles';
+import { Padding } from '@mui/icons-material';
 
 interface ISysCardTaskStyled {
 	Container: React.ElementType;
 	ActionBox: React.ElementType;
 	Status: React.ElementType;
+	Owner: React.ElementType;
+	NavContainerDesktop: ElementType<BoxProps>;
+	NavContainerMobile: ElementType<BoxProps>;
 }
 
 const SysCardTaskStyled: ISysCardTaskStyled = {
@@ -20,16 +24,17 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 		display: 'grid',
 		gap: '0.75rem 1.25rem',
 		gridTemplateColumns: ' 25px 2fr 2fr 140px 1fr',
-		gridTemplateAreas: '"icon description owner status actions"',
+		gridTemplateAreas: '"icon description description description description" " icon owner status actions actions"',
 		alignItems: 'center',
 		textAlign: 'left',
 		[theme.breakpoints.down('lg')]: {
 			gridTemplateColumns: ' 25px 2fr 1fr 1fr',
-			gridTemplateAreas: '"icon description owner" "status actions actions"'
+			gridTemplateAreas: '"icon description description description" "icon  status owner actions"'
 		},
 		[theme.breakpoints.down('sm')]: {
-			gridTemplateColumns: '25px 1fr 1fr 1fr',
-			gridTemplateAreas: '"icon description description" "owner owner" "status actions actions"'
+			padding: sysSizing.spacingFixedSm,			
+			gridTemplateColumns: '25px 1.1fr  1fr 32px',
+			gridTemplateAreas: '"icon description description  actions"  "icon status owner actions"'
 		},
 		'& > p': {
 			wordBreak: 'break-all'
@@ -38,7 +43,8 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 	ActionBox: styled(Box)(({ theme }) => ({
 		gridArea: 'actions',
 		display: 'flex',
-		justifyContent: 'end',
+		justifySelf: 'flex-end',
+		justifyContent: 'flex-end',
 		gap: sysSizing.spacingFixedMd,
 		'> svg': {
 			cursor: 'pointer',
@@ -48,9 +54,58 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 	Status: styled(Typography)(({ theme }) => ({
 		gridArea: 'status',
 		[theme.breakpoints.down('sm')]: {
-			justifySelf: 'end'
+			justifySelf: 'start',
+		},
+		[theme.breakpoints.down('lg')]: {
+			justifySelf: 'start'
 		}
-	}))
+
+	})),
+	Owner: styled(Typography)(({ theme }) => ({
+		gridArea: 'owner',
+		[theme.breakpoints.down('lg')]: {
+			justifySelf: 'start'
+			
+		},
+		[theme.breakpoints.down('sm')]: {
+			justifySelf: 'start',
+			justifyContent: 'start'
+		},
+		
+
+	})),
+	/**
+   * Each breakpoint (a key) matches with a fixed screen width (a value).
+   * {
+   *    // extra-small
+   *    xs: 0,
+   *    // small
+   *    sm: 600,
+   *    // medium
+   *    md: 900,
+   *    // large
+   *    lg: 1200,
+   *    // extra-large
+   *    xl: 1536,
+   * }
+   */
+	NavContainerDesktop: styled(Box)(({ theme }) => ({
+		flex: 1,
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'flex-end',
+		gap: sysSizing.spacingRemMd,
+		paddingRight: sysSizing.spacingFixedMd,
+		[theme.breakpoints.down('sm')]: { display: 'none' },
+	})),
+	NavContainerMobile: styled(Box)(({ theme }) => ({
+		display: 'none',
+		flex: 1,
+		alignItems: 'end',
+		justifyContent: 'end',
+		[theme.breakpoints.down('sm')]: { display: 'flex' },
+	})),
+
 };
 
 export default SysCardTaskStyled;
