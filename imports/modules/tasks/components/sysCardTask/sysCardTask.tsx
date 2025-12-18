@@ -6,13 +6,12 @@ import Tooltip from '@mui/material/Tooltip';
 import SysCardTaskStyled from './sysCardTaskStyles';
 import { TaskListControllerContext } from '../../pages/taskList/taskListController';
 import SysIcon from '../../../../ui/components/sysIcon/sysIcon';
+
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import SysMenu from '/imports/ui/components/sysMenu/sysMenuProvider';
 import { ISysMenuRef } from '/imports/ui/components/sysMenu/sysMenuProvider';
-
-import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
 import { ITask } from '../../api/taskSch';
-import { Disabled } from '/imports/ui/components/sysAccordion/sysAccordion.stories';
+import { useNavigate } from 'react-router-dom';
 
 interface ISysTaskProps {
 	title: string;
@@ -26,13 +25,13 @@ interface ISysTaskProps {
 
 
 export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps) => {
-	
+	const navigate = useNavigate();
 	const context = React.useContext(TaskListControllerContext);
 	const menuMobileRef = useRef<ISysMenuRef>(null);
 
 	const { onDeleteButtonClick, onEditButtonClick, onConcluirButtonClick } = context;
 	const { title, description, owner, ownerId, _id, type, sx } = props;
-	const { Container, ActionBox, Status, Owner, NavContainerDesktop, NavContainerMobile } = SysCardTaskStyled;
+	const { Container, ActionBox, Status, Owner, Description, NavContainerDesktop, NavContainerMobile } = SysCardTaskStyled;
 	const userId = Meteor.userId();
 
 	const StatusTexto = () => {
@@ -90,16 +89,20 @@ export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps
 		menuMobileRef.current?.openMenu(event)
 	}, [menuMobileRef]);
 
+	const fecharMenuMobile = useCallback((): void => {
+		menuMobileRef.current?.closeMenu()
+	}, [menuMobileRef]);
+
 	return (
 		<Container sx={sx} key={_id}>
 
 			<ListItemAvatar sx={{ maxWidth: '3%', gridArea: 'icon' }}>
-				<LabelOutlinedIcon color="action" />
+				{type === "concluido" ? <SysIcon name='checkCircle'/> : <SysIcon name='errorCircle'  /> }
 			</ListItemAvatar>
 
-			<Typography sx={{ gridArea: 'description' }} variant="subtitle1">
+			<Description onClick= {()=> navigate(`/mytask/view/${_id}`)}>
 				{description}
-			</Typography>
+			</Description>
 
 			<Owner >
 				{owner}

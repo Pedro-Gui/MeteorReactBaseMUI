@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { Fragment, useContext } from 'react';
 import { TaskDetailControllerContext } from './taskDetailContoller';
 import { TaskModuleContext } from '../../taskContainer';
 import TaskDetailStyles from './taskDetailStyles';
@@ -13,6 +13,7 @@ import SysFormButton from '../../../../ui/components/sysFormFields/sysFormButton
 import { SysUploadFile } from '../../../../ui/components/sysFormFields/sysUploadFile/sysUploadFile';
 import SysIcon from '../../../../ui/components/sysIcon/sysIcon';
 import SysSwitch from '/imports/ui/components/sysFormFields/sysSwitch/sysSwitch';
+import Box from '@mui/material/Box';
 
 const TaskDetailView = () => {
 	const controller = useContext(TaskDetailControllerContext);
@@ -21,8 +22,8 @@ const TaskDetailView = () => {
 	const isView = state === 'view';
 	const isEdit = state === 'edit';
 	const isCreate = state === 'create';
-	const { Container, Body, Header, Footer, FormColumn } = TaskDetailStyles;
-
+	const { Container, Body, Header, Footer, FormColumn, FormRow } = TaskDetailStyles;
+	console.log(state)
 	return (
 		<Container>
 			<Header>
@@ -38,6 +39,13 @@ const TaskDetailView = () => {
 					onClick={!isView ? controller.closePage : () => controller.changeToEdit(controller.document._id || '')}>
 					{!isView ? <SysIcon name={'close'} /> : <SysIcon name={'edit'} />}
 				</IconButton>
+				{isView && (
+					<IconButton
+						disabled={userId !== controller.document.ownerId}
+						onClick={() => controller.onDeleteButtonClick(controller.document._id || '')}
+					>
+						{<SysIcon name={'delete'} />}
+					</IconButton>)}
 			</Header>
 			<SysForm
 				mode={state as 'create' | 'view' | 'edit'}
@@ -45,26 +53,50 @@ const TaskDetailView = () => {
 				doc={controller.document}
 				onSubmit={controller.onSubmit}
 				loading={controller.loading}>
-				<Body>
+				<Body >
 					<FormColumn>
 						<SysTextField name="title" placeholder="Ex.: Item XX" />
-						<SysSelectField name="type" placeholder="Selecionar" disabled={state !== 'edit'} />
-						<SysRadioButton name="typeMulti" childrenAlignment="row" size="small" />
+						<SysSelectField name="type" placeholder="Selecionar" disabled={!isEdit} />
+						{!isView &&
+							(<SysTextField
+								name="description"
+								placeholder="Acrescente informações sobre o item (3 linhas)"
+								multiline
+								rows={3}
+								showNumberCharactersTyped
+								max={200}
+							/>
+							)}
+						<FormRow>
+							<Box sx={{ flex: 1, maxWidth: '305px', width: 'auto' }}>
+								<SysRadioButton name="typeMulti" childrenAlignment="row" size="small" />
+							</Box>
+							<Box sx={{ width: 'auto' }}>
+								<SysSwitch name='isPrivate'
+									valueLabelTrue={controller.schema.isPrivate.valueLabelTrue} // porque está propriedade precisa ser passada assim ? mas o label vem direto do schema
+									valueLabelFalse={controller.schema.isPrivate.valueLabelFalse}
+								/>
+
+							</Box>
+
+						</FormRow>
+
+						{!isView && (<SysUploadFile name="files" />)}
+					</FormColumn>
+					{isView && (<FormColumn>
 						<SysTextField
 							name="description"
+							inputMode='text'
 							placeholder="Acrescente informações sobre o item (3 linhas)"
 							multiline
-							rows={3}
+							minRows={3}
+							maxRows={8}
 							showNumberCharactersTyped
 							max={200}
 						/>
-						<SysSwitch name='isPrivate'
-							valueLabelTrue={controller.schema.isPrivate.valueLabelTrue} // porque está propriedade precisa ser passada assim ? mas o label vem direto do schema
-							valueLabelFalse={controller.schema.isPrivate.valueLabelFalse}
-						/>
 
 						<SysUploadFile name="files" />
-					</FormColumn>
+					</FormColumn>)}
 				</Body>
 				<Footer>
 					{!isView && (

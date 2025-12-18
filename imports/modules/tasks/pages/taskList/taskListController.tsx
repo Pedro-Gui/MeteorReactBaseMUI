@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useContext, useState} from 'react';
+import React, { useCallback, useMemo, useContext, useState } from 'react';
 import TaskListView from './taskListView';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { taskApi } from '../../api/taskApi';
 import { TaskModuleContext } from '../../taskContainer';
 import { IMeteorError } from '../../../../typings/BoilerplateDefaultTypings';
 import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
-
+import DeleteDialog from '/imports/ui/appComponents/showDialog/custom/deleteDialog/deleteDialog';
 
 interface IInitialConfig {
 	sortProperties: { field: string; sortAscending: boolean; skip: number; limit: number };
@@ -41,7 +41,7 @@ export const TaskListControllerContext = React.createContext<ITaskListContollerC
 );
 
 const initialConfig = {
-	sortProperties: { field: 'createdat', sortAscending: false, skip: 0, limit: 5 },
+	sortProperties: { field: 'type', sortAscending: true, skip: 0, limit: 5 },
 	filter: {},
 	searchBy: null,
 	pageInitial: 1,
@@ -49,12 +49,13 @@ const initialConfig = {
 
 const TaskListController = () => {
 	const [config, setConfig] = React.useState<IInitialConfig>(initialConfig);
-	const { showNotification } = useContext<IAppLayoutContext>(AppLayoutContext);
+	const { showNotification, showDialog, closeDialog } = useContext<IAppLayoutContext>(AppLayoutContext);
+	
 	const { state } = useContext(TaskModuleContext);
 	const { title, type, typeMulti } = taskApi.getSchema();
 	const taskSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
 	const navigate = useNavigate();
-	
+
 	const { sortProperties, filter, pageInitial } = config;
 
 	const [page, setPage] = useState<number>(pageInitial);
@@ -131,9 +132,25 @@ const TaskListController = () => {
 			}
 		});
 	}, []);
-	
+
 	const onDeleteButtonClick = useCallback((id: string) => {
-		taskApi.remove({ _id: id });
+						DeleteDialog({
+							showDialog: showDialog,
+							closeDialog: closeDialog,
+							title:  'Excluir arquivo',
+							message:  'Tem certeza que deseja excluir a tarefa ?',
+							onDeleteConfirm: () => {
+								taskApi.remove({ _id: id });
+								showNotification({
+								  type: 'success',
+								  title: 'Operação realizada!',
+								  message: 'Tarefa excluída com sucesso!'
+								});
+							}
+						});
+					
+
+		
 	}, []);
 
 	const onChangeTextField = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,13 +196,18 @@ const TaskListController = () => {
 
 	const onSetFilter = useCallback(
 		(field: string, value: string | null | undefined) => {
-			setConfig((prevConfig) => ({
-				...prevConfig,
-				filter: {
-					...prevConfig.filter,
-					...(value ? { [field]: value } : { [field]: { $ne: null } })
-				}
-			}));
+			console.log(field, value);
+
+			
+				setConfig((prevConfig) => ({
+					...prevConfig,
+					filter: {
+						...prevConfig.filter,
+						...(value ?
+							 {[field]: value === 'aberto' ?  { $in: ['andamento', 'naoConcluido'] } :  value } : { [field]: { $ne: null } })
+					}
+				}));
+			
 		},
 		[tasks]
 	);

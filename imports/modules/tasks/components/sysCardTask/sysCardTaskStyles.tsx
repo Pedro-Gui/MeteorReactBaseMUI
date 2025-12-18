@@ -1,15 +1,15 @@
 import React from 'react';
 import { ElementType } from 'react';
-import { Box, BoxProps, IconButton, IconButtonProps, styled } from '@mui/material';
+import { Box, BoxProps, styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { sysShadows, sysSizing } from '../../../../ui/materialui/styles';
-import { Padding } from '@mui/icons-material';
 
 interface ISysCardTaskStyled {
 	Container: React.ElementType;
 	ActionBox: React.ElementType;
 	Status: React.ElementType;
 	Owner: React.ElementType;
+	Description: React.ElementType;
 	NavContainerDesktop: ElementType<BoxProps>;
 	NavContainerMobile: ElementType<BoxProps>;
 }
@@ -23,22 +23,23 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 		boxShadow: sysShadows.shadow2,
 		display: 'grid',
 		gap: '0.75rem 1.25rem',
-		gridTemplateColumns: ' 25px 2fr 2fr 140px 1fr',
-		gridTemplateAreas: '"icon description description description description" " icon owner status actions actions"',
+		gridTemplateColumns: ' 25px 2fr 2fr 1fr',
+		gridTemplateAreas: '"icon description description description" " icon owner status actions"',
 		alignItems: 'center',
 		textAlign: 'left',
 		[theme.breakpoints.down('lg')]: {
-			gridTemplateColumns: ' 25px 2fr 1fr 1fr',
-			gridTemplateAreas: '"icon description description description" "icon  status owner actions"'
+			gridTemplateColumns: ' 25px 1.5fr 1.5fr 1fr',
+			gridTemplateAreas: '"icon description description description" "icon owner status actions"'
 		},
 		[theme.breakpoints.down('sm')]: {
 			padding: sysSizing.spacingFixedSm,			
-			gridTemplateColumns: '25px 1.1fr  1fr 32px',
-			gridTemplateAreas: '"icon description description  actions"  "icon status owner actions"'
+			gridTemplateColumns: '25px 1fr  1.1fr 32px',
+			gridTemplateAreas: '"icon description description  actions"  "icon owner status actions"'
 		},
 		'& > p': {
 			wordBreak: 'break-all'
-		}
+		},
+		
 	})),
 	ActionBox: styled(Box)(({ theme }) => ({
 		gridArea: 'actions',
@@ -74,6 +75,13 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 		
 
 	})),
+	Description: styled(Typography)(({ theme }) => ({
+		gridArea: 'description',
+	    variant:"subtitle1",
+		cursor: 'pointer',
+		}
+	)),
+
 	/**
    * Each breakpoint (a key) matches with a fixed screen width (a value).
    * {
@@ -89,6 +97,7 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
    *    xl: 1536,
    * }
    */
+
 	NavContainerDesktop: styled(Box)(({ theme }) => ({
 		flex: 1,
 		display: 'flex',

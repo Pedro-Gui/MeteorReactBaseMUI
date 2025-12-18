@@ -8,6 +8,7 @@ import { ITask } from '../../api/taskSch';
 import { ISchema } from '../../../../typings/ISchema';
 import { IMeteorError } from '../../../../typings/BoilerplateDefaultTypings';
 import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
+import DeleteDialog from '/imports/ui/appComponents/showDialog/custom/deleteDialog/deleteDialog';
 
 interface ITaskDetailContollerContext {
 	closePage: () => void;
@@ -17,6 +18,7 @@ interface ITaskDetailContollerContext {
 	schema: ISchema<ITask>;
 	onSubmit: (doc: ITask) => void;
 	changeToEdit: (id: string) => void;
+	onDeleteButtonClick: (id: string) => void;
 }
 
 export const TaskDetailControllerContext = createContext<ITaskDetailContollerContext>(
@@ -26,24 +28,25 @@ export const TaskDetailControllerContext = createContext<ITaskDetailContollerCon
 const TaskDetailController = () => {
 	const navigate = useNavigate();
 	const { id, state } = useContext(TaskModuleContext);
-	const { showNotification } = useContext<IAppLayoutContext>(AppLayoutContext);
+	const { showNotification, showDialog ,closeDialog } = useContext<IAppLayoutContext>(AppLayoutContext);
 	
 	const { document, userId, loading } = useTracker(() => {
 		const subHandle = !!id ? taskApi.subscribe('taskDetail', { _id: id }) : null;
-		const document = id && subHandle?.ready() ? taskApi.findOne({ _id: id }) : {};
+		const document = !!id && subHandle?.ready() ? taskApi.findOne({ _id: id }) : {};
 		const userId = Meteor.userId();
 		return {
 			document: (document as ITask) ?? ({ _id: id } as ITask),
 			userId: userId || '',
 			loading: !!subHandle && !subHandle?.ready()
 		};
-	}, [id]);
+	}, [id, state]);
 	
 	const closePage = useCallback(() => {
 		navigate(-1);
 	}, []);
 	const changeToEdit = useCallback((id: string) => {
 		navigate(`/mytask/edit/${id}`);
+		location.reload();// recarregar a pagina para a descriçãod a tarefa aparecer
 	}, []);
 
 	const onSubmit = useCallback((doc: ITask) => {
@@ -69,6 +72,23 @@ const TaskDetailController = () => {
 		});
 	}, []);
 
+	const onDeleteButtonClick = useCallback((id: string) => {
+						DeleteDialog({
+							showDialog: showDialog,
+							closeDialog: closeDialog,
+							title:  'Excluir arquivo',
+							message:  'Tem certeza que deseja excluir a tarefa ?',
+							onDeleteConfirm: () => {
+								taskApi.remove({ _id: id });
+								navigate(-1);
+								showNotification({
+								  type: 'success',
+								  title: 'Operação realizada!',
+								  message: 'Tarefa excluída com sucesso!'
+								});
+							}
+						});
+	}, []);
 	return (
 		<TaskDetailControllerContext.Provider
 			value={{
@@ -78,7 +98,8 @@ const TaskDetailController = () => {
 				loading,
 				schema: taskApi.getSchema(),
 				onSubmit,
-				changeToEdit
+				changeToEdit,
+				onDeleteButtonClick
 			}}>
 			{<TaskDetailView />}
 		</TaskDetailControllerContext.Provider>

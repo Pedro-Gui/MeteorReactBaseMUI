@@ -15,55 +15,58 @@ import Pagination from '@mui/material/Pagination';
 const TaskListView = () => {
 
 	const { list, onSearch, onSetFilter, onAddButtonClick, onTaskButtonClick, state, page, setPage, loading } = useContext(TaskListControllerContext);
-	const [selectedRole, setSelectedRole] = useState('');
+	const [selectedRole, setSelectedRole] = useState("aberto"); // quero que o filtro fique por padrão em 'aberto', mas não funciona. A intrução defaultValue tambem não funciona
 	const [searchTxt, setSearchTxt] = useState('');
 	const theme = useTheme();
 	const { Container, Filters } = TaskListStyles;
 	const options = [
-		{ value: '', label: 'Nenhum' },
+		{ value: '', label: 'Todos' },
+		{ value: 'aberto', label: 'Em aberto' },
 		{ value: 'concluido', label: 'Concluído' },
 		{ value: 'andamento', label: 'Em andamento' },
 		{ value: 'naoConcluido', label: 'Não concluído' }
 	];
-	
+
 
 	return (
 		<Container>
 			<Typography variant="h5">{state ? "Minhas Tarefas" : "Atividades recentes"}</Typography>
-			{state &&  (<Filters>
-				<TextField
-					name="TaskSearch"
-					placeholder="Pesquisar por descrição"
-					value={searchTxt}
-					onChange={(e) => { setSearchTxt(e.target.value); onSearch('description', e.target.value); }}
-					InputProps={{
-						startAdornment: (
-							<InputAdornment position="start">
-								<SysIcon name={'search'} sx={{ color: theme.palette.sysAction?.primaryIcon }} />
-							</InputAdornment>
+			{state && (
+				<Filters>
+					<TextField
+						name="TaskSearch"
+						placeholder="Pesquisar por descrição"
+						value={searchTxt}
+						onChange={(e) => { setSearchTxt(e.target.value); onSearch('description', e.target.value); }}
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<SysIcon name={'search'} sx={{ color: theme.palette.sysAction?.primaryIcon }} />
+								</InputAdornment>
 
-						),
-						endAdornment: searchTxt && (
-							<InputAdornment position="end">
-								<IconButton onClick={() => { setSearchTxt(''); onSearch('description', '') }} edge="end">
-									<SysIcon name={'close'} />
-								</IconButton>
-							</InputAdornment>
-						)
-					}}
-				/>
-				<SysSelectField
-					name="Status"
-					label="Filtrar por status"
-					placeholder="Selecionar"
-					value={selectedRole}
-					onChange={(e) => {
-						setSelectedRole(e.target.value);
-						onSetFilter('type', e.target.value);
-					}}
-					options={options}
-				/>
-			</Filters>)}
+							),
+							endAdornment: searchTxt && (
+								<InputAdornment position="end">
+									<IconButton onClick={() => { setSearchTxt(''); onSearch('description', '') }} edge="end">
+										<SysIcon name={'close'} />
+									</IconButton>
+								</InputAdornment>
+							)
+						}}
+					/>
+					<SysSelectField
+						name="type"
+						label="Filtrar por status"
+						placeholder="Selecionar"
+						defaultValue='aberto'
+						value={selectedRole}
+						onChange={(e) => {
+							setSelectedRole(e.target.value);
+							onSetFilter('type', e.target.value);
+						}}
+						options={options}
+					/>
+				</Filters>)}
 			{list && !loading &&
 				list?.map((task) => {
 					return (
@@ -79,11 +82,11 @@ const TaskListView = () => {
 					);
 				})}
 			{/*no lugar de 10 deveria ser tamanho da lista dividido pelo numero de elementos por pagina, mas não consegui publicar o tamanho da lista ainda*/}
-			{state && !loading &&(<Pagination count={10} page={page} onChange={(e, value) => setPage(value)} color="primary" />)}
+			{state && !loading && (<Pagination count={10} page={page} onChange={(e, value) => setPage(value)} color="primary" />)}
 			<SysFab
 				variant="extended"
 				text={state ? "Adicionar tarefa" : "Minhas tarefas"}
-				startIcon={<SysIcon name={'attachFile'} />}
+				startIcon={state ? <SysIcon name={'add'} /> : <SysIcon name={'attachFile'} />}
 				fixed={true}
 				onClick={state ? onAddButtonClick : onTaskButtonClick}
 			/>

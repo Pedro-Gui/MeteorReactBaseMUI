@@ -23,7 +23,7 @@ export const taskSch: ISchema<ITask> = {
 		type: String,
 		label: 'Descrição',
 		defaultValue: '',
-		optional: true
+		optional: false
 	},
 
 	type: {

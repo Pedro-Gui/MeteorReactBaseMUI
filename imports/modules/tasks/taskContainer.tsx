@@ -16,10 +16,10 @@ export default (props: IDefaultContainerProps) => {
 	const state = screenState ?? props.screenState;
 	const id = taskId ?? props.id;
 
-	const validState = ['view','mytask', 'edit', 'create'];
+	const validState = ['view', 'edit', 'create'];
 
 	const renderPage = () => {
-		if (!state || !validState.includes(state) ||  state == 'mytask' ) return <TaskListController />;
+		if (!state || !validState.includes(state) ) return <TaskListController />;
 		return <TaskDetailController />;
 	};
 
