@@ -28,8 +28,8 @@ export const TaskDetailControllerContext = createContext<ITaskDetailContollerCon
 const TaskDetailController = () => {
 	const navigate = useNavigate();
 	const { id, state } = useContext(TaskModuleContext);
-	const { showNotification, showDialog ,closeDialog } = useContext<IAppLayoutContext>(AppLayoutContext);
-	
+	const { showNotification, showDialog, closeDialog, closeWindow } = useContext<IAppLayoutContext>(AppLayoutContext);
+
 	const { document, userId, loading } = useTracker(() => {
 		const subHandle = !!id ? taskApi.subscribe('taskDetail', { _id: id }) : null;
 		const document = !!id && subHandle?.ready() ? taskApi.findOne({ _id: id }) : {};
@@ -40,18 +40,20 @@ const TaskDetailController = () => {
 			loading: !!subHandle && !subHandle?.ready()
 		};
 	}, [id, state]);
-	
+
 	const closePage = useCallback(() => {
-		navigate(-1);
+		closeWindow();
 	}, []);
+
 	const changeToEdit = useCallback((id: string) => {
+
 		navigate(`/mytask/edit/${id}`);
-		location.reload();// recarregar a pagina para a descriçãod a tarefa aparecer
+
 	}, []);
 
 	const onSubmit = useCallback((doc: ITask) => {
 		const selectedAction = state === 'create' ? 'insert' : 'update';
-		
+
 		doc.owner = Meteor.user()?.username || 'unknown';
 		doc.ownerId = Meteor.userId()!;
 		taskApi[selectedAction](doc, (e: IMeteorError) => {
@@ -73,21 +75,21 @@ const TaskDetailController = () => {
 	}, []);
 
 	const onDeleteButtonClick = useCallback((id: string) => {
-						DeleteDialog({
-							showDialog: showDialog,
-							closeDialog: closeDialog,
-							title:  'Excluir arquivo',
-							message:  'Tem certeza que deseja excluir a tarefa ?',
-							onDeleteConfirm: () => {
-								taskApi.remove({ _id: id });
-								navigate(-1);
-								showNotification({
-								  type: 'success',
-								  title: 'Operação realizada!',
-								  message: 'Tarefa excluída com sucesso!'
-								});
-							}
-						});
+		DeleteDialog({
+			showDialog: showDialog,
+			closeDialog: closeDialog,
+			title: 'Excluir arquivo',
+			message: 'Tem certeza que deseja excluir a tarefa ?',
+			onDeleteConfirm: () => {
+				taskApi.remove({ _id: id });
+				closePage();
+				showNotification({
+					type: 'success',
+					title: 'Operação realizada!',
+					message: 'Tarefa excluída com sucesso!'
+				});
+			}
+		});
 	}, []);
 	return (
 		<TaskDetailControllerContext.Provider
@@ -101,7 +103,7 @@ const TaskDetailController = () => {
 				changeToEdit,
 				onDeleteButtonClick
 			}}>
-			{<TaskDetailView />}
+			{<TaskDetailView key={`${document._id}-${state}`}/>} {/* essa key garante que o react renderize novamente o componente sempre que a rota muda, sem ela a mudança de estado do sysform de view para edit buga e a descrição não carrega devidamente */}
 		</TaskDetailControllerContext.Provider>
 	);
 };

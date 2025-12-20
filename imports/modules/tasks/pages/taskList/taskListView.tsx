@@ -15,7 +15,6 @@ import Pagination from '@mui/material/Pagination';
 const TaskListView = () => {
 
 	const { list, onSearch, onSetFilter, onAddButtonClick, onTaskButtonClick, state, page, setPage, loading } = useContext(TaskListControllerContext);
-	const [selectedRole, setSelectedRole] = useState("aberto"); // quero que o filtro fique por padrão em 'aberto', mas não funciona. A intrução defaultValue tambem não funciona
 	const [searchTxt, setSearchTxt] = useState('');
 	const theme = useTheme();
 	const { Container, Filters } = TaskListStyles;
@@ -26,7 +25,6 @@ const TaskListView = () => {
 		{ value: 'andamento', label: 'Em andamento' },
 		{ value: 'naoConcluido', label: 'Não concluído' }
 	];
-
 
 	return (
 		<Container>
@@ -57,11 +55,8 @@ const TaskListView = () => {
 					<SysSelectField
 						name="type"
 						label="Filtrar por status"
-						placeholder="Selecionar"
-						defaultValue='aberto'
-						value={selectedRole}
+						placeholder="Selecionar"	
 						onChange={(e) => {
-							setSelectedRole(e.target.value);
 							onSetFilter('type', e.target.value);
 						}}
 						options={options}

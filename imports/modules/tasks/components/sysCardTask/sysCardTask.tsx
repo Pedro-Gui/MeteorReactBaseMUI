@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useRef, RefObject } from 'react';
+import React, { Fragment, useCallback, useRef, RefObject , useContext  } from 'react';
 import { SxProps, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -6,12 +6,11 @@ import Tooltip from '@mui/material/Tooltip';
 import SysCardTaskStyled from './sysCardTaskStyles';
 import { TaskListControllerContext } from '../../pages/taskList/taskListController';
 import SysIcon from '../../../../ui/components/sysIcon/sysIcon';
-
+import AppLayoutContext, { IAppLayoutContext } from '/imports/app/appLayoutProvider/appLayoutContext';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import SysMenu from '/imports/ui/components/sysMenu/sysMenuProvider';
 import { ISysMenuRef } from '/imports/ui/components/sysMenu/sysMenuProvider';
 import { ITask } from '../../api/taskSch';
-import { useNavigate } from 'react-router-dom';
 
 interface ISysTaskProps {
 	title: string;
@@ -25,9 +24,10 @@ interface ISysTaskProps {
 
 
 export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps) => {
-	const navigate = useNavigate();
+	
 	const context = React.useContext(TaskListControllerContext);
 	const menuMobileRef = useRef<ISysMenuRef>(null);
+	const sysLayoutContext = useContext<IAppLayoutContext>(AppLayoutContext);
 
 	const { onDeleteButtonClick, onEditButtonClick, onConcluirButtonClick } = context;
 	const { title, description, owner, ownerId, _id, type, sx } = props;
@@ -100,7 +100,11 @@ export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps
 				{type === "concluido" ? <SysIcon name='checkCircle'/> : <SysIcon name='errorCircle'  /> }
 			</ListItemAvatar>
 
-			<Description onClick= {()=> navigate(`/mytask/view/${_id}`)}>
+			<Description onClick= {() => {
+						sysLayoutContext.showWindow({
+							urlPath: `/mytask/view/${_id}`
+						});
+						}}>
 				{description}
 			</Description>
 

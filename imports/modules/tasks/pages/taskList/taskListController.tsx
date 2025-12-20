@@ -41,7 +41,7 @@ export const TaskListControllerContext = React.createContext<ITaskListContollerC
 );
 
 const initialConfig = {
-	sortProperties: { field: 'type', sortAscending: true, skip: 0, limit: 5 },
+	sortProperties: { field: 'createdat', sortAscending: false, skip: 0, limit: 5 },
 	filter: {},
 	searchBy: null,
 	pageInitial: 1,
@@ -49,9 +49,10 @@ const initialConfig = {
 
 const TaskListController = () => {
 	const [config, setConfig] = React.useState<IInitialConfig>(initialConfig);
-	const { showNotification, showDialog, closeDialog } = useContext<IAppLayoutContext>(AppLayoutContext);
+	const { showNotification,showWindow, showDialog, closeDialog } = useContext<IAppLayoutContext>(AppLayoutContext);
 	
 	const { state } = useContext(TaskModuleContext);
+	
 	const { title, type, typeMulti } = taskApi.getSchema();
 	const taskSchReduzido = { title, type, typeMulti, createdat: { type: Date, label: 'Criado em' } };
 	const navigate = useNavigate();
@@ -60,7 +61,7 @@ const TaskListController = () => {
 
 	const [page, setPage] = useState<number>(pageInitial);
 
-	var sort = {
+	let sort = {
 		[sortProperties.field]: sortProperties.sortAscending ? 1 : -1,
 		limit: sortProperties.limit,
 		skip: sortProperties.skip
@@ -84,12 +85,16 @@ const TaskListController = () => {
 
 	const onAddButtonClick = useCallback(() => {
 		const newDocumentId = nanoid();
-		navigate(`/mytask/create/${newDocumentId}`);
+		showWindow({
+							urlPath: `/mytask/create/${newDocumentId}`
+						});
 	}, []);
 
 	const onEditButtonClick = useCallback((id: string) => {
-		const newDocumentId = nanoid();
-		navigate(`/mytask/edit/${id}`);
+
+		showWindow({
+							urlPath: `/mytask/edit/${id}`
+						});
 	}, []);
 
 	const onTaskButtonClick = useCallback(() => {
@@ -99,7 +104,7 @@ const TaskListController = () => {
 
 	const onConcluirButtonClick = useCallback((doc: ITask) => {
 
-		switch (doc.type) {
+		switch (doc.type) { //passando para o proximo estagio naoConcluido -> andamento -> concluido -> maoconcluido .....
 			case 'concluido':
 				doc.type = 'naoConcluido';
 				break;
@@ -195,10 +200,7 @@ const TaskListController = () => {
 	}, []);
 
 	const onSetFilter = useCallback(
-		(field: string, value: string | null | undefined) => {
-			console.log(field, value);
-
-			
+		(field: string, value: string | null | undefined) => {		
 				setConfig((prevConfig) => ({
 					...prevConfig,
 					filter: {
@@ -211,7 +213,18 @@ const TaskListController = () => {
 		},
 		[tasks]
 	);
-
+	const { filter2 } = useTracker(() => { // fiz isso para resetar o filtro quando mudar de estado entre minhas tarefas e todas as tarefas
+		const filter2 = !state ? setConfig((prevConfig) => ({
+					...prevConfig,
+					filter: {
+						...prevConfig.filter,
+						...( { ['type']: { $ne: null } })
+					}
+				})) : null;
+		return {
+			filter2,
+		};
+	}, [state]);
 	const providerValues: ITaskListContollerContext = useMemo(
 		() => ({
 			onTaskButtonClick,

@@ -18,7 +18,7 @@ export const SysViewFieldStyle = {
 	Info: styled(Typography)<IInfo>(({ theme, type, disabled }) => ({
 		display: 'flex',
 		alignItems: 'center',
-		height: type === 'label' ? '21px' : '25px',
+		height: 'auto', //type === 'label' ? '21px' : '25px',   //tirei a condição ao lado porque dava overflow em textos maiores
 		color: disabled
 			? theme.palette.sysText?.disabled
 			: type == 'label'

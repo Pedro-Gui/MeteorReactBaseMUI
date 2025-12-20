@@ -85,8 +85,10 @@ export const SysSelectField: React.FC<ISysSelectFieldProps> = ({
 
 	const handleChange = (e: SelectChangeEvent) => {
 		const newValue = e.target.value;
+
 		const selectedOption = optionsState?.find((option) => option.value === newValue);
-		setValueState(selectedOption?.label || '');
+		//setValueState(selectedOption?.label || '');  // set VALUE como LABEL - errado ????
+		setValueState(selectedOption?.value || '');
 		if (inSysFormContext) {
 			controllerSysForm?.onChangeComponentValue({ refComponent: refObject!, value: newValue });
 		}
@@ -126,15 +128,19 @@ export const SysSelectField: React.FC<ISysSelectFieldProps> = ({
 						disabled={disabled || loading}
 						multiple={multiple}
 						IconComponent={() => <SysIcon name={'arrowDropDown'} />}
-						renderValue={(options) => {
-							if (!hasValue(options)) {
+						renderValue={(newValue) => { //renderValue={(options)... não faz sentido pq aqui é o valor selecionado (não as opções), então mudei para newValue para não sobre escrever as options originais dentro da função.
+							// tirei esse trecho tambem para aparecer o label que eu defini para o value ''.
+							/* if (!hasValue(selected)) {
 								return (
 									<Typography variant="body1" color={'text.disabled'}>
 										{placeholder}
 									</Typography>
 								);
-							}
-							return options;
+							} 
+							return selected // essa instrução estava errada, pois retornava o value, e não o label
+							 */ 
+							const viewValue = options?.find((option) => option.value === newValue);
+							return viewValue ? viewValue.label : newValue;
 						}}>
 						{options?.length === 0 ? (
 							<MenuItem id={'NoValues'} disabled value="">

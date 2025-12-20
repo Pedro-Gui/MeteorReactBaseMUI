@@ -32,14 +32,14 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 			gridTemplateAreas: '"icon description description description" "icon owner status actions"'
 		},
 		[theme.breakpoints.down('sm')]: {
-			padding: sysSizing.spacingFixedSm,			
+			padding: sysSizing.spacingFixedSm,
 			gridTemplateColumns: '25px 1fr  1.1fr 32px',
 			gridTemplateAreas: '"icon description description  actions"  "icon owner status actions"'
 		},
 		'& > p': {
 			wordBreak: 'break-all'
 		},
-		
+
 	})),
 	ActionBox: styled(Box)(({ theme }) => ({
 		gridArea: 'actions',
@@ -66,20 +66,36 @@ const SysCardTaskStyled: ISysCardTaskStyled = {
 		gridArea: 'owner',
 		[theme.breakpoints.down('lg')]: {
 			justifySelf: 'start'
-			
+
 		},
 		[theme.breakpoints.down('sm')]: {
 			justifySelf: 'start',
 			justifyContent: 'start'
 		},
-		
+
 
 	})),
 	Description: styled(Typography)(({ theme }) => ({
 		gridArea: 'description',
-	    variant:"subtitle1",
+		variant: "subtitle1",
 		cursor: 'pointer',
+		transition: 'color 0.3s ease',
+		borderRadius: sysSizing.radiusSm,
+		
+		'&:hover': {
+			color: theme.palette.primary.contrastText, 
+			backgroundColor: theme.palette.primary.light,
+			transform: 'scale(0.99)' 
+			//textDecoration: 'underline',
+		},
+
+		'&:active': {
+			color: theme.palette.primary.contrastText, 
+			backgroundColor: theme.palette.primary.dark,
+			transform: 'scale(0.99)' 
 		}
+
+	}
 	)),
 
 	/**

@@ -23,7 +23,7 @@ const TaskDetailView = () => {
 	const isEdit = state === 'edit';
 	const isCreate = state === 'create';
 	const { Container, Body, Header, Footer, FormColumn, FormRow } = TaskDetailStyles;
-	console.log(state)
+	
 	return (
 		<Container>
 			<Header>
@@ -36,6 +36,7 @@ const TaskDetailView = () => {
 					{isCreate ? 'Adicionar Item' : isEdit ? 'Editar Item' : controller.document.title}
 				</Typography>
 				<IconButton
+					disabled={userId !== controller.document.ownerId}
 					onClick={!isView ? controller.closePage : () => controller.changeToEdit(controller.document._id || '')}>
 					{!isView ? <SysIcon name={'close'} /> : <SysIcon name={'edit'} />}
 				</IconButton>
@@ -84,7 +85,7 @@ const TaskDetailView = () => {
 						{!isView && (<SysUploadFile name="files" />)}
 					</FormColumn>
 					{isView && (<FormColumn>
-						<SysTextField
+							<SysTextField
 							name="description"
 							inputMode='text'
 							placeholder="Acrescente informações sobre o item (3 linhas)"
