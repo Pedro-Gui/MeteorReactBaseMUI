@@ -57,6 +57,7 @@ const TaskDetailView = () => {
 				<Body >
 					<FormColumn>
 						<SysTextField name="title" placeholder="Ex.: Item XX" />
+						{isView && (<SysTextField name="owner" placeholder="owner" />)}
 						<SysSelectField name="type" placeholder="Selecionar" disabled={!isEdit} />
 						{!isView &&
 							(<SysTextField

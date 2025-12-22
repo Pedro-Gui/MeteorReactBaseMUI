@@ -48,7 +48,7 @@ class TaskServerApi extends ProductServerBase<ITask> {
 			'taskList',
 			(filter = {}, options: any = {}) => {
 				const userId = Meteor.userId(); 
-				var { limit, skip, ...sort } = options.sort || {};
+				let { limit, skip, ...sort } = options.sort || {};
 				// tem jeito mais simples de limitar um numero em um raio ?
 				limit = limit > 25 ?  25:  limit;
 				limit = limit < 0 ?   0:  limit; 
@@ -71,16 +71,14 @@ class TaskServerApi extends ProductServerBase<ITask> {
 						ownerId: 1, isPrivate: 1, typeMulti: 1, createdat: 1
 					},       
 					sort: sort,         
-           			limit: limit,      
+           			limit: limit || 5,      
             		skip: skip || 0       
 				};
 
 				return this.defaultListCollectionPublication(filter, FullOptions);
 			}
 			
-		);
-
-		
+		);		
 		this.addPublication('taskDetail', (filter = {}) => {
 
 			return this.defaultDetailCollectionPublication(filter, {

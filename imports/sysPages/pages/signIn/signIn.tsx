@@ -30,6 +30,7 @@ const SignInPage: React.FC = () => {
 ;	};
 
 	const handleForgotPassword = () => navigate('/password-recovery');
+	const handleNewUser = () => navigate('/signup');
 
 	useEffect(() => {
 		if (user) navigate('/');
@@ -54,6 +55,9 @@ const SignInPage: React.FC = () => {
 						<FormWrapper>
 							<SysTextField name="email" label="Email" fullWidth placeholder="Digite seu email" />
 							<SysTextField label="Senha" fullWidth name="password" placeholder="Digite sua senha" type="password" />
+							<Button variant="text" sx={{ alignSelf: 'flex-end' }} onClick={handleNewUser}>
+								<Typography variant="link">Criar usuário</Typography>
+							</Button>
 							<Button variant="text" sx={{ alignSelf: 'flex-end' }} onClick={handleForgotPassword}>
 								<Typography variant="link">Esqueci minha senha</Typography>
 							</Button>

@@ -20,7 +20,8 @@ const SignInStyles: ISignInStyles = {
 		position: 'relative',
 
 		[theme.breakpoints.up('md')]: {
-			backgroundImage: 'url(/images/wireframe/background-synergia.svg)',
+			//backgroundImage: 'url(/images/wireframe/background-synergia.svg)',
+			backgroundImage: 'url(/images/wireframe/ListaBg.png)',
 			backgroundSize: 'cover',
 			backgroundPosition: 'right'
 		}

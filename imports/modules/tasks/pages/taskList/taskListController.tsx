@@ -225,6 +225,7 @@ const TaskListController = () => {
 			filter2,
 		};
 	}, [state]);
+	
 	const providerValues: ITaskListContollerContext = useMemo(
 		() => ({
 			onTaskButtonClick,

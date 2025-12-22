@@ -34,11 +34,11 @@ const sysGreyColors: Partial<Record<ColorKey, string>> = {
 const sysPurpleColors: Partial<Record<ColorKey, string>> = {
   10: "#09006b",
   20: "#1400a8",
-  30: "#312ebd",
+  30: "#47005b",//"#312ebd",
   40: "#4b4ad5",
-  50: "#6768f2",
+  50: "#4B0082",//"#6768f2",
   60: "#8183ff",
-  70: "#a1a2ff",
+  70: "#650082",//"#a1a2ff",
   80: "#c1c1ff",
   90: "#e1dfff",
   95: "#eff0ff",
@@ -108,6 +108,8 @@ const sysYellowColors: Partial<Record<ColorKey, string>> = {
 
 //region Blue colors
 const sysBlueColors: Partial<Record<ColorKey, string>> = {
+  15: "#21005b",
+  20: "#2f0082",
   30: "#025e97",
   40: "#027dca",
   50: "#069efc",
@@ -130,9 +132,9 @@ const sysLightPalette: PaletteOptions = {
   },
 
   secondary: {
-    light: sysGreenColors[95],
-    main: sysGreenColors[80]!,
-    dark: sysGreenColors[60],
+    light: sysBlueColors[30],//sysGreenColors[95],
+    main: sysBlueColors[20]!,//sysGreenColors[80]!,
+    dark: sysBlueColors[15],//sysGreenColors[60],
     contrastText: sysGreyColors[20]
   },
 

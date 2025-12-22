@@ -118,6 +118,7 @@ async function validateLoginFacebook(user: Meteor.User & { name?: string; email?
 
 // if the database is empty on server start, create some sample data.
 Meteor.startup(() => {
+	
 	Accounts.emailTemplates.from = settings.mail_system;
 	Accounts.emailTemplates.siteName = settings.name;
 
@@ -174,12 +175,12 @@ Meteor.startup(() => {
 		const email =
 			`${
 				`<p>Olá ${userData.username || 'usuário'},</p>` +
-				'<p>Sua senha de acesso ao <strong>MeteorReactBase-MUI</strong> será alterada.</p>' +
+				'<p>Sua senha de acesso ao <strong>To-Do List MeteorReactBase-MUI</strong> será alterada.</p>' +
 				'<p>Clique no link abaixo e informe uma nova senha:</p>' +
 				'<p><ins><a href='
 			}${urlWithoutHash}>${urlWithoutHash}</a></ins></p>` +
 			'<p></p>' +
-			'<p><br/>Equipe <b>MeteorReactBase-MUI</b></p>';
+			'<p><br/>Equipe <b>To-Do List MeteorReactBase-MUI</b></p>';
 		const footer = `Essa mensagem foi gerada automaticamente!`;
 		return getHTMLEmailTemplate('Alteração da senha atual', email, footer);
 	};
