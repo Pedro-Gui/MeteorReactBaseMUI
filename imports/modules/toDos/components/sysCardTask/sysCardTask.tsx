@@ -50,8 +50,12 @@ export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps
 				break;
 		}
 	}
+
 	const menuOpcoes = () => {
-		const opcoes =
+		let opcoes: any[] = [];
+
+		if (ownerId === userId) {
+			opcoes =
 			[
 				{
 					key: `${_id}-AvancarStatus`,
@@ -61,9 +65,7 @@ export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps
 						startIcon: (<SysIcon name='checkCircle' />)
 					}
 				},
-			]
-		if (ownerId === userId) {
-			opcoes.push(
+			
 				{
 					key: `${_id}-Deletar`,
 					onClick: () => onDeleteButtonClick(_id),
@@ -71,16 +73,17 @@ export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps
 						label: 'Deletar',
 						startIcon: (<SysIcon name='delete' />),
 					}
-				}
-			)
-			opcoes.unshift({
+				},
+				{
 									key: `${_id}-Editar`,
 									onClick: () => onEditButtonClick(props._id),
 									otherProps: {
 										label: 'Editar',
 										startIcon: (<SysIcon name='edit' />),
 									}
-								})
+								}
+			];
+			
 		}
 		return opcoes;
 	}
@@ -119,7 +122,7 @@ export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps
 				<NavContainerDesktop>
 					<Tooltip title={'Avançar etapa de status'}>
 						<span>
-							<IconButton onClick={() => onConcluirButtonClick(props as ITask)} >
+							<IconButton onClick={() => onConcluirButtonClick(props as ITask)} disabled={ownerId !== userId}>
 								<SysIcon name={'checkCircle'} />
 							</IconButton>
 						</span>
@@ -144,7 +147,7 @@ export const SysCardTask: React.FC<ISysTaskProps> = ({ ...props }: ISysTaskProps
 				</NavContainerDesktop>
 				<NavContainerMobile>
 					<Fragment>
-						<IconButton onClick={abrirMenuMobile}>
+						<IconButton onClick={abrirMenuMobile} disabled={ownerId !== userId}>
 							<SysIcon name='moreVert' sx={{ width: '24px', height: '24px', padding: '-24px' }} />
 						</IconButton>
 						<SysMenu

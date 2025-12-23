@@ -1,4 +1,4 @@
-import { Recurso as Tasks } from '../../modules/tasks/config/recursos';
+import { Recurso as Tasks } from '../../modules/toDos/config/recursos';
 import { Recurso as Usuarios } from '/imports/modules/userprofile/config/recurso';
 import { RoleType } from '/imports/security/config/roleType';
 

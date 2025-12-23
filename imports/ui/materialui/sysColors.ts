@@ -187,7 +187,7 @@ const sysLightPalette: PaletteOptions = {
     base: sysCommonColors.white,
     baseContrast: sysCommonColors.black,
     primary: sysPurpleColors[50],
-    secondary: sysGreenColors[80],
+    secondary: sysBlueColors[20]!,//sysGreenColors[80],
     tertiary: sysNeonColors[90],
   },
   background: {

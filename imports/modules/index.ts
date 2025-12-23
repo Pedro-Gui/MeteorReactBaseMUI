@@ -1,5 +1,5 @@
 import { IAppMenu, IModuleHub, IRoute } from './modulesTypings';
-import Task from './tasks/config';
+import Task from './toDos/config';
 
 
 const pages: Array<IRoute | null> = [

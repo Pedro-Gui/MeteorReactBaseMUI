@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { IDefaultContainerProps } from '../../typings/BoilerplateDefaultTypings';
 import { useParams } from 'react-router-dom';
 import UserProfileListController from '../../modules/userprofile/pages/UserProfileList/userProfileListController';
-import TaskDetailController from '../tasks/pages/taskDetail/taskDetailContoller';
+import TaskDetailController from '../toDos/pages/taskDetail/taskDetailContoller';
 import AuthContext, { IAuthContext } from '/imports/app/authProvider/authContext';
 
 export interface IUserProfileModuleContext {

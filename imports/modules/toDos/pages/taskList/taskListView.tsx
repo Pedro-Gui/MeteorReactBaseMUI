@@ -25,7 +25,6 @@ const TaskListView = () => {
 		{ value: 'andamento', label: 'Em andamento' },
 		{ value: 'naoConcluido', label: 'Não concluído' }
 	];
-
 	return (
 		<Container>
 			<Typography variant="h5">{state ? "Minhas Tarefas" : "Atividades recentes"}</Typography>
@@ -77,7 +76,7 @@ const TaskListView = () => {
 					);
 				})}
 			{/*no lugar de 10 deveria ser tamanho da lista dividido pelo numero de elementos por pagina, mas não consegui publicar o tamanho da lista ainda*/}
-			{state && !loading && (<Pagination count={10} page={page} onChange={(e, value) => setPage(value)} color="primary" />)}
+			{state && !loading && (<Pagination count={10} page={page} onChange={(e, value) => setPage(value)} color="primary" sx={{width: '100%'}} />)}
 			<SysFab
 				variant="extended"
 				text={state ? "Adicionar tarefa" : "Minhas tarefas"}
